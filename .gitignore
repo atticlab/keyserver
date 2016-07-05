@@ -1,0 +1,9 @@
+.DS_Store
+.idea
+nbproject
+/backup/*
+/app/*
+/logs/*
+/storage/*
+node_modules
+bower_components

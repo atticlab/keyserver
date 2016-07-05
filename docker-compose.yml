@@ -1,0 +1,32 @@
+version: '2'
+services:
+
+  php-fpm:
+    restart: always
+    container_name: keyserver_fpm
+    build:
+      context: docker/php-fpm
+      dockerfile: Dockerfile
+    volumes:
+      - ./docker/php-fpm/app:/app
+      - ./logs/:/logs
+    links:
+      - riak
+
+  nginx:
+    restart: always
+    build: docker/nginx
+    ports:
+      - "8085:80"
+    volumes:
+      - ./docker/php-fpm/app:/app
+      - ./logs/:/logs
+    links:
+      - php-fpm
+
+  riak:
+    restart: always
+    build: docker/riak
+    volumes:
+      - ./storage/riak:/var/lib/riak
+      - ./logs/:/logs
