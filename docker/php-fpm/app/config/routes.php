@@ -1,11 +1,13 @@
 <?php
+
 use Phalcon\Mvc\Micro\Collection as MicroCollection;
 use \SWP\Services\ResponseService;
 
-$app->get('/', function () {
+$app->get('/', function() {
 	return ResponseService::prepareResponse("Welcome to SmartMoney Wallet!", 200);
 });
-$app->notFound(function () {
+
+$app->notFound(function() {
 	return ResponseService::prepareResponse("no_content", 204);
 });
 
@@ -19,12 +21,17 @@ if (class_exists("WalletsController")) {
 
 	//show_login_params
 	$v2->post('show_login_params', "getLoginParamsAction");
-
-	//show
 	$v2->post('show', "showAction");
+	$v2->post('update', "updateAction");
+	$v2->post('updatePassword', "updatePasswordAction");
 
 	//getWalletData
 	$v2->post('get_wallet_data', "getWalletDataAction");
 
 	$app->mount($v2);
+}
+
+if (class_exists("KdfparamsController")) {
+	$controller = new KdfparamsController();
+	$app->get('/v2/kdf_params', [$controller, 'showAction']);
 }

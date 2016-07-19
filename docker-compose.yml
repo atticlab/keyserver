@@ -3,13 +3,12 @@ services:
 
   php-fpm:
     restart: always
-    container_name: keyserver_fpm
     build:
       context: docker/php-fpm
       dockerfile: Dockerfile
     volumes:
       - ./docker/php-fpm/app:/app
-      - ./logs/:/logs
+      - ./logs/php-fpm/:/logs
     links:
       - riak
 
@@ -20,7 +19,7 @@ services:
       - "8085:80"
     volumes:
       - ./docker/php-fpm/app:/app
-      - ./logs/:/logs
+      - ./logs/nginx/:/logs
     links:
       - php-fpm
 
@@ -29,4 +28,4 @@ services:
     build: docker/riak
     volumes:
       - ./storage/riak:/var/lib/riak
-      - ./logs/:/logs
+      - ./logs/riak/:/logs

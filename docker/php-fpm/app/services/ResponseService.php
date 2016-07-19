@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: skorzun
- * Date: 17.06.16
- * Time: 12:31
- */
 
 namespace SWP\Services;
 
@@ -17,13 +11,20 @@ abstract class ResponseService {
 	 * @param int $statusCode -- HTTP status code
 	 * @return Response
 	 */
-	public static function prepareResponse($content, $statusCode = 200) {
+	public static function prepareResponse($content, $statusCode = 200)
+	{
 		$response = new Response();
-		$response->setStatusCode($statusCode);
-		$response->setHeader('Content-Type', 'application/json');
+
+		# Set CORS headers
 		$response->setHeader('Access-Control-Allow-Origin', '*');
-		$response->setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    	$response->setHeader('Access-Control-Allow-Credentials', 'true');
+    	$response->setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+    	$response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+		$response->setHeader('Content-Type', 'application/json');
+
+		$response->setStatusCode($statusCode);
 		$response->setContent($content);
+
 		return $response;
 	}
 }

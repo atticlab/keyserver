@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: skorzun
- * Date: 17.06.16
- * Time: 13:34
- */
 
 namespace SWP\Validators;
 
@@ -90,19 +84,19 @@ class CreateWalletValidator extends Validation {
 		$this->add(
 			'username',
 			new StringLength(array(
-				                 'max' => 255,
-				                 'min' => 3,
-				                 'messageMaximum' => 'The username is not 3-255 characters (too big)',
-				                 'messageMinimum' => 'The username is not 3-255 characters (too small)'
-			                 ))
+	             'max' => 255,
+	             'min' => 3,
+	             'messageMaximum' => 'The username is not 3-255 characters (too big)',
+	             'messageMinimum' => 'The username is not 3-255 characters (too small)'
+	         ))
 		);
 
 		$this->add(
 			'salt',
 			new ByteLengthValidator(array(
-				                        'length' => 16,
-				                        'message' => 'The salt must be an 32 bytes length'
-			                        ))
+	            'length' => 16,
+	            'message' => 'The salt must be an 32 bytes length'
+	        ))
 		);
 
 		$this->add(
@@ -127,6 +121,7 @@ class CreateWalletValidator extends Validation {
 				                  'message' => 'The kdfParams is not a JSON'
 			                  ))
 		);
+
 		$this->add(
 			'phone',
 			new PhoneNumberValidator(

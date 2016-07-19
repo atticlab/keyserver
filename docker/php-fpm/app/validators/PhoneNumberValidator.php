@@ -17,7 +17,12 @@ use Phalcon\Validation as Validation;
 class PhoneNumberValidator extends Validator implements ValidatorInterface
 {
     /**
-     * validation phone number (+XXXXXXXXXXXX)
+     * Used to validate mobile phone number length
+     **/
+    const PHONE_LENGTH = 10;
+
+    /**
+     * validation phone number (XXXXXXXXXX)
      *
      * @param Phalcon\Validation $validator
      * @param string $attribute
@@ -25,33 +30,17 @@ class PhoneNumberValidator extends Validator implements ValidatorInterface
      */
     public function validate(Validation $validator, $attribute)
     {
-        if (($message = $this->getOption('allowEmpty')) &&
-            (!$validator->getValue($attribute))
-        ) {
+        $value = $validator->getValue($attribute);
+        if (!$value && $this->getOption('allowEmpty')) {
             return true;
         }
 
-        $value = preg_replace('/[^0-9\+]/', '', $validator->getValue($attribute));
-
-        if (strlen($value) < 5 || strlen($value) > 20) {
-            $message = $this->getOption('message');
-            if (!$message) {
-                $message = 'Very long phone number!';
-            }
+        if (!preg_match('/^(\d){'.self::PHONE_LENGTH.'}$/', $value)) {
+            $message = $this->getOption('message') ?: 'phone_bad_format';
             $validator->appendMessage(new Message($message, $attribute, 'phone'));
-
             return false;
         }
-        ///^(\+)(\d{5,20}+)$/
-        if (!preg_match('/^(\d{5,20}+)$/', $value)) {
-            $message = $this->getOption('message');
-            if (!$message) {
-                $message = 'phone_bad_format';
-            }
-            $validator->appendMessage(new Message($message, $attribute, 'phone'));
 
-            return false;
-        }
         return true;
     }
 }

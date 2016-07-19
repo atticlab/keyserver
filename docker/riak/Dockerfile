@@ -34,10 +34,3 @@ RUN sed -i "s|listener.http.internal = 127.0.0.1:8098|listener.http.internal = 0
 EXPOSE 8087 8098
 
 CMD ["/usr/bin/supervisord"]
-
-
-
-
-
-
-

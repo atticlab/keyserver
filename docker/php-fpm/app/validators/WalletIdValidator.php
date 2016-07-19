@@ -27,9 +27,9 @@ class WalletIdValidator extends Validation {
 		$this->add(
 			'walletId',
 			new ByteLengthValidator(array(
-				                        'length' => 32,
-				                        'message' => 'The walletId must be an 32 bytes length'
-			                        ))
+                'length' => 32,
+                'message' => 'The walletId must be an 32 bytes length'
+            ))
 		);
 
 	}
