@@ -142,7 +142,7 @@ class WalletsController extends Controller
         } catch (Exception $e) {
             $preparedData = [
                 'status' => 'fail',
-                'code'   => $e->getMessage()
+                'code' => $e->getMessage()
             ];
 
             return ResponseService::prepareResponse(json_encode($preparedData), 401);
@@ -158,7 +158,7 @@ class WalletsController extends Controller
             if (count($messages)) {
                 $preparedData = [
                     'status' => 'fail',
-                    'code'   => 'bad_param_phone'
+                    'code' => 'bad_param_phone'
                 ];
 
                 return ResponseService::prepareResponse(json_encode($preparedData), 401);
@@ -169,7 +169,7 @@ class WalletsController extends Controller
                 Wallet::find($this->riakDB, ['phone' => $params['phone']]);
                 $preparedData = [
                     'status' => 'fail',
-                    'code'   => 'phone_exists'
+                    'code' => 'phone_exists'
                 ];
 
                 return ResponseService::prepareResponse(json_encode($preparedData), 401);
@@ -185,7 +185,7 @@ class WalletsController extends Controller
             if (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
                 $preparedData = [
                     'status' => 'fail',
-                    'code'   => 'bad_param_email'
+                    'code' => 'bad_param_email'
                 ];
 
                 return ResponseService::prepareResponse(json_encode($preparedData), 401);
@@ -196,7 +196,7 @@ class WalletsController extends Controller
                 Wallet::find($this->riakDB, ['email' => $params['email']]);
                 $preparedData = [
                     'status' => 'fail',
-                    'code'   => 'email_exists'
+                    'code' => 'email_exists'
                 ];
 
                 return ResponseService::prepareResponse(json_encode($preparedData), 401);
@@ -210,7 +210,7 @@ class WalletsController extends Controller
 
         $preparedData = [
             'status' => 'fail',
-            'code'   => 'nothing_to_update'
+            'code' => 'nothing_to_update'
         ];
 
         // TODO update lock version
@@ -219,14 +219,14 @@ class WalletsController extends Controller
                 $result = $wallet->update();
                 $preparedData = [
                     'status' => 'success',
-                    'email'  => $wallet->email,
-                    'phone'  => $wallet->phone,
+                    'email' => $wallet->email,
+                    'phone' => $wallet->phone,
                     'newLockVersion' => '0'
                 ];
             } catch (Exception $e) {
                 $preparedData = [
                     'status' => 'fail',
-                    'code'   => $e->getMessage()
+                    'code' => $e->getMessage()
                 ];
             }
         }
@@ -241,7 +241,7 @@ class WalletsController extends Controller
         } catch (Exception $e) {
             $preparedData = [
                 'status' => 'fail',
-                'code'   => $e->getMessage()
+                'code' => $e->getMessage()
             ];
 
             return ResponseService::prepareResponse(json_encode($preparedData), 401);
@@ -254,11 +254,11 @@ class WalletsController extends Controller
             return ResponseService::prepareResponse(json_encode($validationResult), 401);
         }
 
-        $wallet->walletId           = $params['walletId'];
-        $wallet->salt               = $params['salt'];
-        $wallet->kdfParams          = $params['kdfParams'];
-        $wallet->mainData           = $params['mainData'];
-        $wallet->keychainData       = $params['keychainData'];
+        $wallet->walletId = $params['walletId'];
+        $wallet->salt = $params['salt'];
+        $wallet->kdfParams = $params['kdfParams'];
+        $wallet->mainData = $params['mainData'];
+        $wallet->keychainData = $params['keychainData'];
 
         // TODO update lock version
         try {
@@ -270,7 +270,7 @@ class WalletsController extends Controller
         } catch (Exception $e) {
             $preparedData = [
                 'status' => 'fail',
-                'code'   => $e->getMessage()
+                'code' => $e->getMessage()
             ];
         }
 
@@ -303,10 +303,10 @@ class WalletsController extends Controller
     }
 
     /**
-      * Check auth headers and return wallet object
-      *
-      * @return SWP\Models\Wallet
-      **/
+     * Check auth headers and return wallet object
+     *
+     * @return SWP\Models\Wallet
+     **/
     private function getWalletFromAuth()
     {
         $auth_header = $this->request->getHeader('Authorization');

@@ -27,6 +27,8 @@ class Wallet
     public $phone;
     public $email;
 
+    public $uniqueId;
+
     /**
      * @var Riak $riak
      */
@@ -68,7 +70,8 @@ class Wallet
             'totpRequired' => $this->totpRequired,
             'usernameProof' => $this->usernameProof,
             'phone' => $this->phone,
-            'email' => $this->email
+            'email' => $this->email,
+            'uniqueId' => $this->uniqueId
         ]);
     }
 
@@ -116,6 +119,9 @@ class Wallet
         } elseif (!empty($params['phone'])) {
             $index['name'] = 'phone_bin';
             $index['value'] = $params['phone'];
+        } elseif (!empty($params['uniqueId'])) {
+            $index['name'] = 'uniqueId_bin';
+            $index['value'] = $params['uniqueId'];
         }
 
         if (!empty($index)) {
@@ -136,6 +142,26 @@ class Wallet
         return $response[0];
     }
 
+    private static function generateUniqueId($riak) {
+        $chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $res = [];
+        $res['uniqueId'] = "";
+        for ($i = 0; $i < 5; $i++) {
+            $res['uniqueId'] .= $chars[mt_rand(0, strlen($chars) - 1)];
+        }
+        try {
+            $wallet = Wallet::find($riak, $res);
+            if ($wallet->id) {
+                return Wallet::generateUniqueId($riak);
+            }
+        } catch (Exception $e) {
+            if ($e->getMessage() == 'not_found') {
+                return $res['uniqueId'];
+            } else {
+                throw $e;
+            }
+        }
+    }
 
     public function createWallet()
     {
@@ -143,7 +169,12 @@ class Wallet
             $this->loadData();
         } catch (Exception $e) {
             if ($e->getMessage() == 'not_found') {
-
+                //generate unique id for this wallet
+                try {
+                    $this->uniqueId = Wallet::generateUniqueId($this->riak);
+                } catch (Exception $e) {
+                    throw $e;
+                }
                 //store indexes
                 $response = (new \Basho\Riak\Command\Builder\Search\StoreIndex($this->riak))
                     ->withName('accountId_bin')
@@ -157,6 +188,11 @@ class Wallet
 
                 $response = (new \Basho\Riak\Command\Builder\Search\StoreIndex($this->riak))
                     ->withName('email_bin')
+                    ->build()
+                    ->execute();
+
+                $response = (new \Basho\Riak\Command\Builder\Search\StoreIndex($this->riak))
+                    ->withName('uniqueId_bin')
                     ->build()
                     ->execute();
 
@@ -174,6 +210,10 @@ class Wallet
 
                 if (isset($this->email)) {
                     $command->getObject()->addValueToIndex('email_bin', $this->email);
+                }
+
+                if (isset($this->uniqueId)) {
+                    $command->getObject()->addValueToIndex('uniqueId_bin', $this->uniqueId);
                 }
 
                 $response = $command->build()->execute();
@@ -214,10 +254,6 @@ class Wallet
         $command = (new Command\Builder\StoreObject($this->riak))
             ->buildObject($this)
             ->atLocation($this->location);
-
-        if (isset($this->accountId)) {
-            $command->getObject()->addValueToIndex('accountId_bin', $this->accountId);
-        }
 
         if (isset($this->phone)) {
             $command->getObject()->addValueToIndex('phone_bin', $this->phone);
