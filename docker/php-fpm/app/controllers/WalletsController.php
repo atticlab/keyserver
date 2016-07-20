@@ -129,6 +129,7 @@ class WalletsController extends Controller
         $preparedData['updatedAt'] = $result->updatedAt;
         $preparedData['email'] = $result->email;
         $preparedData['phone'] = $result->phone;
+        $preparedData['uniqueId'] = $result->uniqueId;
 
         return ResponseService::prepareResponse(json_encode($preparedData, JSON_UNESCAPED_SLASHES));
     }
@@ -298,6 +299,7 @@ class WalletsController extends Controller
         $preparedData['accountId'] = $result->accountId;
         $preparedData['phone'] = $result->phone;
         $preparedData['email'] = $result->email;
+        $preparedData['uniqueId'] = $result->uniqueId;
 
         return ResponseService::prepareResponse(json_encode($preparedData));
     }
