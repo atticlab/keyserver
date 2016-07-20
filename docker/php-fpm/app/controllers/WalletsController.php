@@ -286,7 +286,7 @@ class WalletsController extends Controller
         }
 
         try {
-            $result = Wallet::find($params);
+            $result = Wallet::find($this->riakDB, $params);
             $wallet = new Wallet($this->riakDB, $result);
             $result = $wallet->loadData();
         } catch (Exception $e) {
