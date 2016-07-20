@@ -109,6 +109,7 @@ class Wallet
     public static function find($riak, $params)
     {
         $index = [];
+        $response = [];
 
         if (!empty($params['accountId'])) {
             $index['name'] = 'accountId_bin';
@@ -122,6 +123,8 @@ class Wallet
         } elseif (!empty($params['uniqueId'])) {
             $index['name'] = 'uniqueId_bin';
             $index['value'] = $params['uniqueId'];
+        } elseif (!empty($params['login'])) {
+            $response[0] = $params['login'];
         }
 
         if (!empty($index)) {
@@ -133,12 +136,12 @@ class Wallet
                 ->build()
                 ->execute()
                 ->getResults();
+
         }
 
         if (empty($response)) {
             throw new Exception('not_found');
         }
-
         return $response[0];
     }
 
