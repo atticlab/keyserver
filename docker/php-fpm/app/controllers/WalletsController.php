@@ -123,6 +123,13 @@ class WalletsController extends Controller
             return ResponseService::prepareResponse(json_encode($preparedData));
         }
 
+        //walletID check
+        if ($params['walletId'] != $result->walletId) {
+            $preparedData['status'] = "fail";
+            $preparedData['code'] = "wallet_not_found";
+            return ResponseService::prepareResponse(json_encode($preparedData));
+        }
+
         $preparedData['lockVersion'] = $result->lockVersion;
         $preparedData['mainData'] = $result->mainData;
         $preparedData['keychainData'] = $result->keychainData;
