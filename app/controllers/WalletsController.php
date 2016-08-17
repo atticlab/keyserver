@@ -235,6 +235,7 @@ class WalletsController extends Controller
                     'status' => 'success',
                     'email' => $wallet->email,
                     'phone' => $wallet->phone,
+                    'HDW' => $wallet->HDW,
                     'newLockVersion' => '0'
                 ];
             } catch (Exception $e) {
