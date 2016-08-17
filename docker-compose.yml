@@ -3,6 +3,8 @@ services:
 
   php-fpm:
     restart: always
+    container_name: smartmoney-keys-fpm
+    image: smartmoney/keys/fpm
     build:
       context: docker/php-fpm
       dockerfile: Dockerfile
@@ -14,6 +16,8 @@ services:
 
   nginx:
     restart: always
+    container_name: smartmoney-keys-nginx
+    image: smartmoney/keys/nginx
     build: docker/nginx
     ports:
       - "8085:80"
@@ -25,6 +29,8 @@ services:
 
   riak:
     restart: always
+    container_name: smartmoney-keys-riak
+    image: smartmoney/keys/riak
     build: docker/riak
     volumes:
       - ./storage/riak:/var/lib/riak
