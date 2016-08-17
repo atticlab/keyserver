@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     # This package is required for mongo
     libssl-dev \
     # Phalcon
-    && git clone --depth=1 git://github.com/phalcon/cphalcon.git /usr/local/src/cphalcon \
+    && git clone --depth=1 -b 2.0.x git://github.com/phalcon/cphalcon.git /usr/local/src/cphalcon \
     && cd /usr/local/src/cphalcon/build && ./install \
     && echo "extension=phalcon.so" > /usr/local/etc/php/conf.d/25-phalcon.ini \
     # install ed25519

@@ -28,6 +28,7 @@ class Wallet
     public $email;
 
     public $uniqueId;
+    public $HDW;
 
     /**
      * @var Riak $riak
@@ -71,7 +72,8 @@ class Wallet
             'usernameProof' => $this->usernameProof,
             'phone' => $this->phone,
             'email' => $this->email,
-            'uniqueId' => $this->uniqueId
+            'uniqueId' => $this->uniqueId,
+            'HDW' => $this->HDW
         ]);
     }
 
