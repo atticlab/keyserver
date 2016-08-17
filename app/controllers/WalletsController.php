@@ -137,6 +137,7 @@ class WalletsController extends Controller
         $preparedData['email'] = $result->email;
         $preparedData['phone'] = $result->phone;
         $preparedData['uniqueId'] = $result->uniqueId;
+        $preparedData['HDW'] = $result->HDW;
 
         return ResponseService::prepareResponse(json_encode($preparedData, JSON_UNESCAPED_SLASHES));
     }
