@@ -217,6 +217,11 @@ class WalletsController extends Controller
             }
         }
 
+        if (!empty($params['HDW']) && $params['HDW'] != $wallet->HDW) {
+            $update = true;
+            $wallet->HDW = $params['HDW'];
+        }
+
         $preparedData = [
             'status' => 'fail',
             'code' => 'nothing_to_update'
