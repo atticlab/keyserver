@@ -16,7 +16,7 @@ abstract class ResponseService {
 		$response = new Response();
 
 		# Set CORS headers
-		$response->setHeader('Access-Control-Allow-Origin', !empty($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '*');
+		$response->setHeader('Access-Control-Allow-Origin', '*');
     	$response->setHeader('Access-Control-Allow-Credentials', 'true');
     	$response->setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     	$response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
