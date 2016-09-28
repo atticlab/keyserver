@@ -25,6 +25,9 @@ if (class_exists("WalletsController")) {
 	$v2->post('update', "updateAction");
 	$v2->post('updatePassword', "updatePasswordAction");
 
+	//delete accounts
+	$v2->get('delete_accounts', "deleteAccountsAction");
+
 	//getWalletData
 	$v2->post('get_wallet_data', "getWalletDataAction");
 

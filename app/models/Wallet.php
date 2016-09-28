@@ -277,6 +277,20 @@ class Wallet
         return $result;
     }
 
+    public function delete()
+    {
+        $deleteCommand = (new Command\Builder\DeleteObject($this->riak))
+            ->atLocation($this->location)
+            ->build();
+
+        $result = $deleteCommand->execute();
+        if (!$result->isSuccess()) {
+            throw new Exception("cannot_delete");
+        }
+        return $result;
+
+    }
+
     private function setFromJSON($data)
     {
         $data = json_decode($data);

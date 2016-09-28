@@ -30,6 +30,15 @@ return new \Phalcon\Config(array(
             'username' => 'testuser@gmail.com',
             'password' => '',
         )
+    ),
+
+    'accountsToDelete' => array(
+        'admin',
+        'bank',
+        'merch',
+        'alice',
+        'bob',
+        'charly'
     )
 ));
 

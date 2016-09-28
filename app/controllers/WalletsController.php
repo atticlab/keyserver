@@ -392,4 +392,22 @@ class WalletsController extends Controller
         $preparedData['status'] = "success";
         return $preparedData;
     }
+
+    public function deleteAccountsAction()
+    {
+        $users = [];
+        foreach ($this->config->accountsToDelete as $username) {
+            try {
+                $wallet = new Wallet($this->riakDB, $username);
+                $result = $wallet->delete();
+                $users['deleted'][] = $username;
+            } catch (Exception $e) {
+                $preparedData['status'] = "fail";
+                $preparedData['code'] = $e->getMessage();
+                return ResponseService::prepareResponse(json_encode($preparedData));
+                $users['not_found'][] = $username;
+            }
+        }
+        return ResponseService::prepareResponse(json_encode($users));
+    }
 }

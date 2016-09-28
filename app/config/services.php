@@ -11,7 +11,7 @@ use SWP\Services\RiakDBService;
  */
 $di = new FactoryDefault();
 
-$di->set('config', function () use ($config) {
+$di->setShared('config', function () use ($config) {
 	return $config;
 });
 
