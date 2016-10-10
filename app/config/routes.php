@@ -3,13 +3,18 @@
 use Phalcon\Mvc\Micro\Collection as MicroCollection;
 use \SWP\Services\ResponseService;
 
-$app->get('/', function() {
-	return ResponseService::prepareResponse("Welcome to SmartMoney Wallet!", 200);
-});
+//$app->get('/', function() {
+//	return ResponseService::prepareResponse("Welcome to SmartMoney Wallet2!", 200);
+//});
 
 $app->notFound(function() {
 	return ResponseService::prepareResponse("no_content", 204);
 });
+
+if (class_exists("IndexController")) {
+    $indexController = new IndexController();
+    $app->get('/', [$indexController, 'indexAction']);
+}
 
 if (class_exists("WalletsController")) {
 	$v2 = new MicroCollection();
