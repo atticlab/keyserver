@@ -13,6 +13,8 @@ services:
       - ./logs/php-fpm/:/logs
     links:
       - riak
+    environment:
+      LOG_LEVEL: DEBUG
 
   nginx:
     restart: always

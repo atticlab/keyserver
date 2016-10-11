@@ -31,6 +31,7 @@ class WalletsController extends Controller
         $validation = new UserNameValidator();
         $validationResult = $this->doValidation($validation, $params);
         if ($validationResult['status'] != "success") {
+            $this->logger->info('Login params not received', ['Path' => '/v2/wallets/show_login_params', 'Validation error:' => $validationResult]);
             return ResponseService::prepareResponse(json_encode($validationResult));
         }
 
@@ -40,6 +41,7 @@ class WalletsController extends Controller
         } catch (Exception $e) {
             $preparedData['status'] = "fail";
             $preparedData['code'] = $e->getMessage();
+            $this->logger->error('Data not loaded from DB', ['Path' => '/v2/wallets/show_login_params', 'Error:' => $preparedData]);
             return ResponseService::prepareResponse(json_encode($preparedData));
         }
 
@@ -47,6 +49,7 @@ class WalletsController extends Controller
         $preparedData['salt'] = $result->salt;
         $preparedData['kdfParams'] = $result->kdfParams;
         $preparedData['totpRequired'] = $result->totpRequired;
+        $this->logger->debug('Login params received', ['Path' => '/v2/wallets/show_login_params', 'Data:' => $preparedData]);
         return ResponseService::prepareResponse(json_encode($preparedData));
     }
 
@@ -64,6 +67,7 @@ class WalletsController extends Controller
         $validation = new CreateWalletValidator();
         $validationResult = $this->doValidation($validation, $params);
         if ($validationResult['status'] != "success") {
+            $this->logger->info('Wallet not created', ['Path' => '/v2/wallets/create', 'Validation error:' => $validationResult]);
             return ResponseService::prepareResponse(json_encode($validationResult));
         }
 
@@ -84,11 +88,13 @@ class WalletsController extends Controller
         } catch (Exception $e) {
             $preparedData['status'] = "fail";
             $preparedData['code'] = $e->getMessage();
+            $this->logger->error('Wallet not created', ['Path' => '/v2/wallets/create', 'Error:' => $preparedData]);
             return ResponseService::prepareResponse(json_encode($preparedData));
         }
 
         $preparedData['status'] = "success";
 
+        $this->logger->debug('Wallet created successfully', ['Path' => '/v2/wallets/create', 'Data:' => $preparedData]);
         return ResponseService::prepareResponse(json_encode($preparedData));
     }
 
@@ -103,12 +109,14 @@ class WalletsController extends Controller
         $validation = new UserNameValidator();
         $validationResult = $this->doValidation($validation, $params);
         if ($validationResult['status'] != "success") {
+            $this->logger->info('Wallet not showed', ['Path' => '/v2/wallets/show', 'Validation error:' => $validationResult]);
             return ResponseService::prepareResponse(json_encode($validationResult));
         }
 
         $validation = new WalletIdValidator();
         $validationResult = $this->doValidation($validation, $params);
         if ($validationResult['status'] != "success") {
+            $this->logger->info('Wallet not showed', ['Path' => '/v2/wallets/show', 'Validation error:' => $validationResult]);
             return ResponseService::prepareResponse(json_encode($validationResult));
         }
 
@@ -120,6 +128,7 @@ class WalletsController extends Controller
         } catch (Exception $e) {
             $preparedData['status'] = "fail";
             $preparedData['code'] = $e->getMessage();
+            $this->logger->error('Data not loaded from DB', ['Path' => '/v2/wallets/show', 'Error:' => $preparedData]);
             return ResponseService::prepareResponse(json_encode($preparedData));
         }
 
@@ -127,6 +136,7 @@ class WalletsController extends Controller
         if ($params['walletId'] != $result->walletId) {
             $preparedData['status'] = "fail";
             $preparedData['code'] = "wallet_not_found";
+            $this->logger->error('Wallet not found', ['Path' => '/v2/wallets/show', 'Error:' => $preparedData]);
             return ResponseService::prepareResponse(json_encode($preparedData));
         }
 
@@ -139,6 +149,7 @@ class WalletsController extends Controller
         $preparedData['uniqueId'] = $result->uniqueId;
         $preparedData['HDW'] = $result->HDW;
 
+        $this->logger->debug('Wallet received successfully', ['Path' => '/v2/wallets/show', 'Data:' => $preparedData]);
         return ResponseService::prepareResponse(json_encode($preparedData, JSON_UNESCAPED_SLASHES));
     }
 
@@ -154,6 +165,7 @@ class WalletsController extends Controller
                 'code' => $e->getMessage()
             ];
 
+            $this->logger->info('Wallet not received. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Info:' => $preparedData]);
             return ResponseService::prepareResponse(json_encode($preparedData), 401);
         }
 
@@ -170,6 +182,7 @@ class WalletsController extends Controller
                     'code' => 'bad_param_phone'
                 ];
 
+                $this->logger->info('Wallet not updated. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
                 return ResponseService::prepareResponse(json_encode($preparedData), 401);
             }
 
@@ -181,6 +194,7 @@ class WalletsController extends Controller
                     'code' => 'phone_exists'
                 ];
 
+                $this->logger->info('Phone exists. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
                 return ResponseService::prepareResponse(json_encode($preparedData), 401);
             } catch (Exception $e) {
                 if ($e->getMessage() == 'not_found') {
@@ -197,6 +211,7 @@ class WalletsController extends Controller
                     'code' => 'bad_param_email'
                 ];
 
+                $this->logger->info('Bad email. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
                 return ResponseService::prepareResponse(json_encode($preparedData), 401);
             }
 
@@ -208,6 +223,7 @@ class WalletsController extends Controller
                     'code' => 'email_exists'
                 ];
 
+                $this->logger->info('Phone exists. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
                 return ResponseService::prepareResponse(json_encode($preparedData), 401);
             } catch (Exception $e) {
                 if ($e->getMessage() == 'not_found') {
@@ -227,6 +243,7 @@ class WalletsController extends Controller
             'code' => 'nothing_to_update'
         ];
 
+
         // TODO update lock version
         if ($update) {
             try {
@@ -238,12 +255,16 @@ class WalletsController extends Controller
                     'HDW' => $wallet->HDW,
                     'newLockVersion' => '0'
                 ];
+                $this->logger->debug('Wallet updated', ['Path' => '/v2/wallets/update', 'Data:' => $preparedData]);
             } catch (Exception $e) {
                 $preparedData = [
                     'status' => 'fail',
                     'code' => $e->getMessage()
                 ];
+                $this->logger->error('Wallet not updated', ['Path' => '/v2/wallets/update', 'Error:' => $preparedData]);
             }
+        } else {
+            $this->logger->error('Wallet not updated', ['Path' => '/v2/wallets/update', 'Error:' => $preparedData]);
         }
 
         return ResponseService::prepareResponse(json_encode($preparedData));
@@ -259,6 +280,7 @@ class WalletsController extends Controller
                 'code' => $e->getMessage()
             ];
 
+            $this->logger->info('Wallet not received. 401 Unauthorized', ['Path' => '/v2/wallets/updatePassword', 'Info:' => $preparedData]);
             return ResponseService::prepareResponse(json_encode($preparedData), 401);
         }
 
@@ -266,6 +288,7 @@ class WalletsController extends Controller
         $validation = new UpdatePasswordValidator();
         $validationResult = $this->doValidation($validation, $params);
         if ($validationResult['status'] != "success") {
+            $this->logger->info('Wallet password not updated', ['Path' => '/v2/wallets/updatePassword', 'Validation error:' => $validationResult]);
             return ResponseService::prepareResponse(json_encode($validationResult), 401);
         }
 
@@ -282,11 +305,13 @@ class WalletsController extends Controller
                 'status' => 'success',
                 'newLockVersion' => '0'
             ];
+            $this->logger->debug('Wallet password updated', ['Path' => '/v2/wallets/updatePassword', 'Data:' => $preparedData]);
         } catch (Exception $e) {
             $preparedData = [
                 'status' => 'fail',
                 'code' => $e->getMessage()
             ];
+            $this->logger->error('Wallet password not updated', ['Path' => '/v2/wallets/updatePassword', 'Data:' => $preparedData]);
         }
 
         return ResponseService::prepareResponse(json_encode($preparedData));
@@ -303,9 +328,11 @@ class WalletsController extends Controller
             $result = Wallet::find($this->riakDB, $params);
             $wallet = new Wallet($this->riakDB, $result);
             $result = $wallet->loadData();
+            $this->logger->debug('Wallet data loaded from DB', ['Path' => '/v2/wallets/get_wallet_data', 'Data:' => $result]);
         } catch (Exception $e) {
             $preparedData['status'] = "fail";
             $preparedData['code'] = $e->getMessage();
+            $this->logger->error('Wallet data not loaded from DB', ['Path' => '/v2/wallets/get_wallet_data', 'Data:' => $preparedData]);
             return ResponseService::prepareResponse(json_encode($preparedData));
         }
 
@@ -315,6 +342,7 @@ class WalletsController extends Controller
         $preparedData['email'] = $result->email;
         $preparedData['uniqueId'] = $result->uniqueId;
 
+        $this->logger->debug('Wallet data received', ['Path' => '/v2/wallets/get-wallet_data', 'Data:' => $preparedData]);
         return ResponseService::prepareResponse(json_encode($preparedData));
     }
 
