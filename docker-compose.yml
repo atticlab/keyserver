@@ -11,6 +11,8 @@ services:
     volumes:
       - ./app:/app
       - ./logs/php-fpm/:/logs
+    environment:
+      LOG_LEVEL: DEBUG
 
   nginx:
     restart: always
@@ -24,3 +26,12 @@ services:
       - ./logs/nginx/:/logs
     links:
       - php-fpm
+
+  riak:
+    restart: always
+    container_name: smartmoney-keys-riak
+    image: smartmoney/keys/riak
+    build: docker/riak
+    volumes:
+      - ./storage/riak:/var/lib/riak
+      - ./logs/riak/:/logs

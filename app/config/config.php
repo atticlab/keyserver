@@ -39,6 +39,10 @@ return new \Phalcon\Config(array(
         'alice',
         'bob',
         'charly'
-    )
+    ),
+    'log' => [
+        'level' => getenv('LOG_LEVEL'),
+        'path'  => __DIR__ . '/../../logs/monolog.log'
+    ]
 ));
 

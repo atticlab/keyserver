@@ -18,3 +18,7 @@ RUN apt-get update && apt-get install -y \
 
 # Inject php conf
 COPY config/php.ini /usr/local/etc/php/
+
+COPY ./entrypoint.sh /
+
+CMD ["/entrypoint.sh"]

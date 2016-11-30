@@ -95,7 +95,7 @@ class CreateWalletValidator extends Validation {
 			'salt',
 			new ByteLengthValidator(array(
 	            'length' => 16,
-	            'message' => 'The salt must be an 32 bytes length'
+	            'message' => 'The salt must be an 16 bytes length'
 	        ))
 		);
 
