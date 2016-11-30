@@ -3,10 +3,6 @@
 use Phalcon\Mvc\Micro\Collection as MicroCollection;
 use \SWP\Services\ResponseService;
 
-//$app->get('/', function() {
-//	return ResponseService::prepareResponse("Welcome to SmartMoney Wallet2!", 200);
-//});
-
 $app->notFound(function() {
 	return ResponseService::prepareResponse("no_content", 204);
 });

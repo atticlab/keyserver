@@ -243,7 +243,6 @@ class WalletsController extends Controller
             'code' => 'nothing_to_update'
         ];
 
-
         // TODO update lock version
         if ($update) {
             try {

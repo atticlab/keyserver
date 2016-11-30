@@ -43,38 +43,4 @@ $di->setShared('logger', function () use ($config) {
     return $logger;
 });
 
-/**
- * Database connection is created based in the parameters defined in the configuration file
- */
-/*$di->set('db', function () use ($config) {
-	$adapter = new \Phalcon\Db\Adapter\Pdo\Mysql(array(
-		'host'     => $config->database->mysql->host,
-		'username' => $config->database->mysql->username,
-		'password' => $config->database->mysql->password,
-		'dbname'   => $config->database->mysql->dbname,
-		"charset"  => $config->database->mysql->charset
-	));
-	$adapter->getInternalHandler()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-    return $adapter;
-});
-*/
-
-/**
- * Start the session the first time some component request the session service
- */
-/*$di->set('session', function () use ($config) {
-	$session = new SessionAdapter();
-	$session->start();
-
-	return $session;
-});
-*/
-
-/**
- * Mail service
- */
-/*$di->set('mail', function () use ($config) {
-	return new Mail($config);
-});*/
-
 $app->setDI($di);
