@@ -21,7 +21,6 @@ state:
 	docker-compose ps
 
 build:
-	sudo chmod 777 storage/riak
 	docker run --rm -v $(COMPOSER_DIR)/app:/app composer/composer --working-dir=/app install
 	docker-compose build
 	docker-compose up -d

@@ -17,10 +17,10 @@ class RiakDBService extends \Phalcon\DI\Injectable
     public $nodes;
     public $db;
 
-    public function __construct($port, $clustersArray) {
+    public function __construct($port, $hosts) {
         $this->nodes = (new Node\Builder)
             ->onPort($port)
-            ->buildCluster($clustersArray);
+            ->buildCluster($hosts);
         // instantiate the Riak client
         $this->db = new Riak($this->nodes);
     }

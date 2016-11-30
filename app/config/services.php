@@ -36,10 +36,9 @@ $di->set('url', function () use ($config) {
 $di->set("request", new Request());
 
 $di->setShared('riakDB', function () use ($config) {
-	$clustersArray = $config->toArray()['database']['riak']['clustersArray'];
 	$riak = new RiakDBService(
-		$config->database->riak->port,
-		$clustersArray
+		       $config->database->riak->port,
+        (array)$config->database->riak->hosts
 	);
 	return $riak->db;
 });

@@ -55,9 +55,9 @@ class Wallet
         $this->location = new Riak\Location($username, $this->bucket);
     }
 
-    public function __toString()
+    public function dataToObject()
     {
-        return json_encode([
+        return (object)[
             'username' => $this->username,
             'accountId' => $this->accountId,
             'walletId' => $this->walletId,
@@ -74,7 +74,7 @@ class Wallet
             'email' => $this->email,
             'uniqueId' => $this->uniqueId,
             'HDW' => $this->HDW
-        ]);
+        ];
     }
 
 
@@ -102,7 +102,7 @@ class Wallet
             throw new Exception('not_found');
         }
 
-        $this->setFromJSON($this->object->getData());
+        $this->setFromData($this->object->getData());
         $this->lockVersion = $this->object->getVclock();
 
         return $this;
@@ -202,7 +202,7 @@ class Wallet
                     ->execute();
 
                 $command = (new Command\Builder\StoreObject($this->riak))
-                    ->buildObject($this)
+                    ->buildJsonObject($this)
                     ->atLocation($this->location);
 
                 if (isset($this->accountId)) {
@@ -245,7 +245,7 @@ class Wallet
 
         $this->updatedAt = date('D M d Y H:i:s O');
 
-        $save = $this->object->setData(json_encode($this));
+        $save = $this->object->setData($this->dataToObject());
         $updateCommand = (new Command\Builder\StoreObject($this->riak))
             ->withObject($save)
             ->atLocation($this->location)
@@ -257,7 +257,7 @@ class Wallet
         }
 
         $command = (new Command\Builder\StoreObject($this->riak))
-            ->buildObject($this)
+            ->buildJsonObject($this)
             ->atLocation($this->location);
 
         if (isset($this->phone)) {
@@ -291,9 +291,8 @@ class Wallet
 
     }
 
-    private function setFromJSON($data)
+    private function setFromData($data)
     {
-        $data = json_decode($data);
         foreach ($data AS $key => $value) {
             if (property_exists($this, $key)) {
                 $this->{$key} = $value;

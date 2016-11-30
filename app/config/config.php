@@ -2,11 +2,12 @@
 return new \Phalcon\Config(array(
     'database' => array(
         'riak' => array(
-            'host' => 'riak',
             'username' => '',
             'password' => '',
             'port' => '8098',
-            'clustersArray' => array('riak')
+            'hosts' => [
+                'riak.smartmoney.com.ua'
+            ]
         )
     ),
     'application' => array(
@@ -17,7 +18,6 @@ return new \Phalcon\Config(array(
         'servicesDir' => __DIR__ . '/../services/',
         'validatorsDir' => __DIR__ . '/../validators/',
         'baseUri' => '/',
-        'publicUrl' => 'http://http://stellar-wallet-php/'
     ),
 
     'mail' => array(
