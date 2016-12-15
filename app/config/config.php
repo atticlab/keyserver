@@ -6,7 +6,7 @@ return new \Phalcon\Config(array(
             'password' => '',
             'port' => '8098',
             'hosts' => [
-                'riak.smartmoney.com.ua'
+                getenv('RIAK_HOST')
             ]
         )
     ),
