@@ -32,6 +32,9 @@ if (class_exists("WalletsController")) {
 	//getWalletData
 	$v2->post('get_wallet_data', "getWalletDataAction");
 
+    //check login exist
+	$v2->post('is_login_exist', "isLoginExistAction");
+
 	$app->mount($v2);
 }
 

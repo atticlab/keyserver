@@ -6,6 +6,7 @@ use \Basho\Riak;
 use \Basho\Riak\Bucket;
 use \Basho\Riak\Command;
 use Exception;
+use \Phalcon\DI;
 
 class Wallet
 {
@@ -298,5 +299,21 @@ class Wallet
                 $this->{$key} = $value;
             }
         }
+    }
+
+    /**
+     * Static method to check if data exists by primary index
+     * @param $id
+     * @return bool
+     */
+    public static function isExist($id)
+    {
+        $riak = DI::getDefault()->get('riakDB');
+        $response = (new Command\Builder\FetchObject($riak))
+            ->buildLocation($id, 'wallets')
+            ->build()
+            ->execute();
+
+        return $response->isSuccess() && $response->getObject();
     }
 }

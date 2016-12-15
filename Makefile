@@ -21,6 +21,9 @@ state:
 	docker-compose ps
 
 build:
+	@if [ ! -f ./.env ]; then\
+  	read -p "Enter riak host:" riak_host; echo "RIAK_HOST=$$riak_host" >> ./.env; \
+	fi
 	docker run --rm -v $(COMPOSER_DIR)/app:/app composer/composer --working-dir=/app install
 	docker-compose build
 	docker-compose up -d

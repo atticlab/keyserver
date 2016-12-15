@@ -437,4 +437,23 @@ class WalletsController extends Controller
         }
         return ResponseService::prepareResponse(json_encode($users));
     }
+
+    public function isLoginExistAction(){
+        $params = json_decode(file_get_contents('php://input'), true);
+        if (!$params) {
+            $params = $this->request->getPost();
+        }
+        if (empty($params['username'])) {
+            $preparedData['status'] = "fail";
+            $preparedData['code'] = 'empty_username_param';
+            return ResponseService::prepareResponse(json_encode($preparedData));
+        }
+        if (Wallet::isExist($params['username'])) {
+            $preparedData['status'] = "fail";
+            $preparedData['code'] = 'already_taken';
+            return ResponseService::prepareResponse(json_encode($preparedData));
+        }
+        $preparedData['status'] = "success";
+        return ResponseService::prepareResponse(json_encode($preparedData));
+    }
 }
