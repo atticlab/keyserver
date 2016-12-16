@@ -187,49 +187,58 @@ class WalletsController extends Controller
             }
 
             // Check if this phone exists
-            try {
-                Wallet::find($this->riakDB, ['phone' => $params['phone']]);
-                $preparedData = [
-                    'status' => 'fail',
-                    'code' => 'phone_exists'
-                ];
+            if (!empty($params['phone'])) {
+                try {
+                    Wallet::find($this->riakDB, ['phone' => $params['phone']]);
+                    $preparedData = [
+                        'status' => 'fail',
+                        'code' => 'phone_exists'
+                    ];
 
-                $this->logger->info('Phone exists. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
-                return ResponseService::prepareResponse(json_encode($preparedData), 401);
-            } catch (Exception $e) {
-                if ($e->getMessage() == 'not_found') {
-                    $update = true;
-                    $wallet->phone = $params['phone'];
+                    $this->logger->info('Phone exists. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
+                    return ResponseService::prepareResponse(json_encode($preparedData), 401);
+                } catch (Exception $e) {
+                    if ($e->getMessage() == 'not_found') {
+                        $update = true;
+                        $wallet->phone = $params['phone'];
+                    }
                 }
+            } else {
+                $update = true;
+                $wallet->phone = $params['phone'];
             }
+
         }
 
         if (isset($params['email']) && $params['email'] != $wallet->email) {
             if (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
-                $preparedData = [
-                    'status' => 'fail',
-                    'code' => 'bad_param_email'
-                ];
+                $preparedData = ['status' => 'fail',
+                    'code' => 'bad_param_email'];
 
                 $this->logger->info('Bad email. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
                 return ResponseService::prepareResponse(json_encode($preparedData), 401);
             }
 
-            // Check if this email exists
-            try {
-                Wallet::find($this->riakDB, ['email' => $params['email']]);
-                $preparedData = [
-                    'status' => 'fail',
-                    'code' => 'email_exists'
-                ];
+// Check if this email exists
+            if (!empty($params['email'])) {
+                try {
+                    Wallet::find($this->riakDB, ['email' => $params['email']]);
+                    $preparedData = [
+                        'status' => 'fail',
+                        'code' => 'email_exists'
+                    ];
 
-                $this->logger->info('Phone exists. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
-                return ResponseService::prepareResponse(json_encode($preparedData), 401);
-            } catch (Exception $e) {
-                if ($e->getMessage() == 'not_found') {
-                    $update = true;
-                    $wallet->email = $params['email'];
+                    $this->logger->info('Phone exists. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
+                    return ResponseService::prepareResponse(json_encode($preparedData), 401);
+                } catch (Exception $e) {
+                    if ($e->getMessage() == 'not_found') {
+                        $update = true;
+                        $wallet->email = $params['email'];
+                    }
                 }
+            } else {
+                $update = true;
+                $wallet->email = $params['email'];
             }
         }
 
@@ -243,7 +252,7 @@ class WalletsController extends Controller
             'code' => 'nothing_to_update'
         ];
 
-        // TODO update lock version
+// TODO update lock version
         if ($update) {
             try {
                 $result = $wallet->update();
@@ -269,7 +278,8 @@ class WalletsController extends Controller
         return ResponseService::prepareResponse(json_encode($preparedData));
     }
 
-    public function updatePasswordAction()
+    public
+    function updatePasswordAction()
     {
         try {
             $wallet = $this->getWalletFromAuth();
@@ -316,7 +326,8 @@ class WalletsController extends Controller
         return ResponseService::prepareResponse(json_encode($preparedData));
     }
 
-    public function getWalletDataAction()
+    public
+    function getWalletDataAction()
     {
         $params = json_decode(file_get_contents('php://input'), true);
         if (!$params) {
@@ -349,7 +360,8 @@ class WalletsController extends Controller
      *
      * @return SWP\Models\Wallet
      **/
-    private function getWalletFromAuth()
+    private
+    function getWalletFromAuth()
     {
         $auth_header = $this->request->getHeader('Authorization');
         if (strpos($auth_header, self::AUTH_HEADER_REGEX) === false) {
@@ -404,7 +416,8 @@ class WalletsController extends Controller
      * @param $params -- an assoc array of params
      * @return mixed -- an assoc array of return params
      */
-    private function doValidation($validation, $params)
+    private
+    function doValidation($validation, $params)
     {
         $messages = $validation->validate($params);
         if (count($messages)) {
@@ -419,7 +432,8 @@ class WalletsController extends Controller
         return $preparedData;
     }
 
-    public function deleteAccountsAction()
+    public
+    function deleteAccountsAction()
     {
         $users = [];
         foreach ($this->config->accountsToDelete as $username) {
@@ -437,7 +451,9 @@ class WalletsController extends Controller
         return ResponseService::prepareResponse(json_encode($users));
     }
 
-    public function isLoginExistAction(){
+    public
+    function isLoginExistAction()
+    {
         $params = json_decode(file_get_contents('php://input'), true);
         if (!$params) {
             $params = $this->request->getPost();
