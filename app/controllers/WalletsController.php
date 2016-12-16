@@ -171,22 +171,21 @@ class WalletsController extends Controller
 
         $params = json_decode(file_get_contents('php://input'), true);
 
-        if ($params['phone'] != $wallet->phone) {
-            if (!empty($params['phone'])) {
-                $validation = new Validation();
-                $validation->add('phone', new PhoneNumberValidator);
-                $messages = $validation->validate($params);
+        if (!empty($params['phone']) && $params['phone'] != $wallet->phone) {
+            $validation = new Validation();
+            $validation->add('phone', new PhoneNumberValidator);
+            $messages = $validation->validate($params);
 
-                if (count($messages)) {
-                    $preparedData = [
-                        'status' => 'fail',
-                        'code' => 'bad_param_phone'
-                    ];
+            if (count($messages)) {
+                $preparedData = [
+                    'status' => 'fail',
+                    'code' => 'bad_param_phone'
+                ];
 
-                    $this->logger->info('Wallet not updated. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
-                    return ResponseService::prepareResponse(json_encode($preparedData), 401);
-                }
+                $this->logger->info('Wallet not updated. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
+                return ResponseService::prepareResponse(json_encode($preparedData), 401);
             }
+
             // Check if this phone exists
             try {
                 Wallet::find($this->riakDB, ['phone' => $params['phone']]);
@@ -205,18 +204,17 @@ class WalletsController extends Controller
             }
         }
 
-        if (($params['email'] != $wallet->email)) {
-            if (!empty($params['email'])) {
-                if (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
-                    $preparedData = [
-                        'status' => 'fail',
-                        'code' => 'bad_param_email'
-                    ];
+        if (!empty($params['email']) && $params['email'] != $wallet->email) {
+            if (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
+                $preparedData = [
+                    'status' => 'fail',
+                    'code' => 'bad_param_email'
+                ];
 
-                    $this->logger->info('Bad email. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
-                    return ResponseService::prepareResponse(json_encode($preparedData), 401);
-                }
+                $this->logger->info('Bad email. 401 Unauthorized', ['Path' => '/v2/wallets/update', 'Validation error:' => $preparedData]);
+                return ResponseService::prepareResponse(json_encode($preparedData), 401);
             }
+
             // Check if this email exists
             try {
                 Wallet::find($this->riakDB, ['email' => $params['email']]);
