@@ -171,7 +171,7 @@ class WalletsController extends Controller
 
         $params = json_decode(file_get_contents('php://input'), true);
 
-        if (!empty($params['phone']) && $params['phone'] != $wallet->phone) {
+        if (isset($params['phone']) && $params['phone'] != $wallet->phone) {
             $validation = new Validation();
             $validation->add('phone', new PhoneNumberValidator);
             $messages = $validation->validate($params);
@@ -204,7 +204,7 @@ class WalletsController extends Controller
             }
         }
 
-        if (!empty($params['email']) && $params['email'] != $wallet->email) {
+        if (isset($params['email']) && $params['email'] != $wallet->email) {
             if (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
                 $preparedData = [
                     'status' => 'fail',
