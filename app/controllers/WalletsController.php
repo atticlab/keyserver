@@ -211,7 +211,7 @@ class WalletsController extends Controller
 
         }
 
-        if (isset($params['email']) && $params['email'] != $wallet->email) {
+        if (isset($params['email']) && (strtolower($params['email']) != strtolower($wallet->email))) {
             if (!empty($params['email'])) {
                 if (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
                     $preparedData = ['status' => 'fail',
