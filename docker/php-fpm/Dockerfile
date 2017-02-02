@@ -19,8 +19,7 @@ RUN apt-get update && apt-get install -y \
     && cd php-ed25519-ext && phpize && ./configure && make && make install \
     && echo "extension=ed25519.so" > /usr/local/etc/php/conf.d/30-ed25519.ini
 
-export http_proxy=''
-export https_proxy=''
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Inject php conf
 COPY config/php.ini /usr/local/etc/php/
