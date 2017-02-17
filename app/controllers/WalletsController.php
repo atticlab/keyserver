@@ -4,6 +4,8 @@ use Phalcon\Mvc\Controller;
 use Phalcon\Di;
 use Phalcon\Validation;
 
+use GuzzleHttp\Client;
+
 use \SWP\Models\Wallet;
 use \SWP\Services\ResponseService;
 use \SWP\Services\SignedJsonService;
@@ -45,6 +47,34 @@ class WalletsController extends Controller
             return ResponseService::prepareResponse(json_encode($preparedData));
         }
 
+        //check sms confirmation
+        $client = new Client();
+
+        $response = $client->request(
+            'POST',
+            $this->config->api_host . '/sms/check',
+            [
+                'http_errors' => false,
+                'form_params' => [
+                    "account_id"    => $wallet->accountId,
+                    "phone"         => $wallet->phone
+                ]
+            ]
+        );
+        if ($response->getStatusCode() != 200) {
+            $this->logger->error($response->getBody()->getContents());
+            $preparedData['status'] = "fail";
+            $preparedData['code'] = "wallet_sms_check_fail";
+            $this->logger->error('Wallet sms check fail', ['Path' => '/v2/wallets/show', 'Error:' => $preparedData]);
+            return ResponseService::prepareResponse(json_encode($preparedData));
+        }
+        $confirmation = json_decode($response->getBody()->getContents());
+        if (!$confirmation->is_confirmed) {
+            $preparedData['status'] = "fail";
+            $preparedData['code'] = "wallet_sms_is_not_confirmed";
+            $this->logger->error('Wallet sms is not confirmed', ['Path' => '/v2/wallets/show', 'Error:' => $preparedData]);
+            return ResponseService::prepareResponse(json_encode($preparedData));
+        }
         $preparedData['username'] = $result->username;
         $preparedData['salt'] = $result->salt;
         $preparedData['kdfParams'] = $result->kdfParams;
@@ -82,6 +112,7 @@ class WalletsController extends Controller
         $wallet->usernameProof = null;
         $wallet->createdAt = date('D M d Y H:i:s O');
         $wallet->updatedAt = $wallet->createdAt;
+        $wallet->phone = $params['phone'];
 
         try {
             $wallet->createWallet();

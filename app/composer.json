@@ -1,6 +1,7 @@
 {
     "require": {
         "basho/riak": "3.0.*",
-        "monolog/monolog": "^1.21"
+        "monolog/monolog": "^1.21",
+        "guzzlehttp/guzzle": "~6.0"
     }
 }

@@ -10,6 +10,7 @@ return new \Phalcon\Config(array(
             ]
         )
     ),
+    'api_host' => getenv('API_HOST'),
     'application' => array(
         'controllersDir' => __DIR__ . '/../controllers/',
         'libraryDir' => __DIR__ . '/../library/',
