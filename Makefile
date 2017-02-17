@@ -23,6 +23,7 @@ state:
 build:
 	@if [ ! -f ./.env ]; then\
   	read -p "Enter riak host:" riak_host; echo "RIAK_HOST=$$riak_host" >> ./.env; \
+  	read -p "Enter api host:" api_host; echo "API_HOST=$$api_host" >> ./.env; \
 	fi
 	docker-compose build
 	docker-compose up -d
