@@ -116,7 +116,9 @@ class WalletsController extends Controller
         $wallet->usernameProof = null;
         $wallet->createdAt = date('D M d Y H:i:s O');
         $wallet->updatedAt = $wallet->createdAt;
-        $wallet->phone = $params['phone'];
+        if (!empty($params['phone'])) {
+            $wallet->phone = $params['phone'];
+        }
 
         try {
             $wallet->createWallet();
