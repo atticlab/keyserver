@@ -1,0 +1,4 @@
+#m  h   d   m   d   user      command
+#0   *   *   *   *   /usr/local/bin/php /src/php/app/cli/cli.php index downloadsCleaner         >/dev/null 2>&1 # Removes downloads marked to delete from DB
+
+# An empty line is required at the end of this file for a valid cron file.

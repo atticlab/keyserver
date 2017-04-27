@@ -1,0 +1,5 @@
+vendor/
+bower_components/
+node_modules/
+public/node_modules/
+logs/debug.log

@@ -1,0 +1,24 @@
+{
+  "require": {
+    "monolog/monolog": "^1.21",
+    "phpmailer/phpmailer": "^5.2",
+    "atticlab/stellar-php-sdk": "dev-master",
+    "attics/soap": "dev-master",
+    "spomky-labs/otphp": "^8.3"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "/usr/local/bin/php /src/php/app/cli/cli.php index yokozuna"
+    ]
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://bitbucket.org/atticlab/stellar-php"
+    },
+    {
+      "type": "git",
+      "url": "https://bitbucket.org/attics/soap"
+    }
+  ]
+}

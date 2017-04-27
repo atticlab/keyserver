@@ -1,30 +1,30 @@
 version: '2'
 services:
 
-  php-fpm:
-    restart: always
-    container_name: smartmoney-keys-fpm
-    image: smartmoney/keys/fpm
-    build:
-      context: docker/php-fpm
-      dockerfile: Dockerfile
-    volumes:
-      - ./app:/app
-      - ./logs/php-fpm/:/logs
-    env_file:
-      - .env
-    environment:
-      LOG_LEVEL: ERROR
-
   nginx:
     restart: always
-    container_name: smartmoney-keys-nginx
-    image: smartmoney/keys/nginx
+    container_name: keyserver-nginx
     build: docker/nginx
     ports:
       - "8085:80"
     volumes:
-      - ./app:/app
+      - ./src:/src
       - ./logs/nginx/:/logs
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d/
     links:
-      - php-fpm
+      - php
+
+  php:
+    restart: always
+    container_name: keyserver-php
+    build: docker/php
+    volumes:
+      - ./src:/src
+      - ./logs:/logs
+    env_file:
+      - ./.env
+
+  redis:
+    restart: always
+    container_name: pullnzb-redis
+    image: redis:3.2

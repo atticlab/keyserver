@@ -1,6 +1,0 @@
-{
-    "require": {
-        "basho/riak": "3.0.*",
-        "monolog/monolog": "^1.21"
-    }
-}
