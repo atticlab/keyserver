@@ -26,5 +26,5 @@ services:
 
   redis:
     restart: always
-    container_name: pullnzb-redis
+    container_name: keyserver-redis
     image: redis:3.2

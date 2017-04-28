@@ -19,8 +19,9 @@ class Wallets extends ModelBase
     public $keychain_data;
     public $salt;
     public $kdf_params;
-    public $is_locked;
+    public $is_locked = false;
     public $created_at;
+    public $is_totp_enabled = false;
     public $totp_secret;
 
     /** @var array Fields which will be stored to DB */
@@ -33,6 +34,7 @@ class Wallets extends ModelBase
         'kdf_params',
         'is_locked',
         'created_at',
+        'is_totp_enabled',
         'totp_secret'
     ];
 
@@ -123,13 +125,17 @@ class Wallets extends ModelBase
             throw new Exception('Both email and phone empty');
         }
 
+        if ($this->is_totp_enabled && empty($this->totp_secret)) {
+            throw new Exception('totp is enabled, but secret is empty');
+        }
+
         $this->email = strtolower($this->email);
         $this->phone = intval($this->phone);
 
         return $this;
     }
 
-    public function enableTotp()
+    public function generateTotpSecret()
     {
         $this->totp_secret = Base32::encode(random_bytes(self::TOTP_SECRET_BYTELENGTH));
     }

@@ -5,6 +5,7 @@ use App\Lib\Auth;
 use App\Lib\Response;
 use App\Models\Wallets;
 use Smartmoney\Stellar\Account;
+use OTPHP\TOTP;
 
 class AuthController extends ControllerBase
 {
@@ -43,18 +44,89 @@ class AuthController extends ControllerBase
         $public_key = Account::getPublicKeyFromAccountId($account_id);
 
         if (!ed25519_sign_open($nonce, $public_key, base64_decode($signature))) {
-            return $this->response->error(Response::ERR_NOT_ALLOWED);
+            return $this->response->error(Response::ERR_BAD_SIGN);
         }
 
         $wallet = Wallets::load($account_id);
         if (empty($wallet)) {
-            return $this->response->error(Response::ERR_NOT_FOUND, 'wallet');
+            return $this->response->error(Response::ERR_NOT_FOUND);
         }
 
-        $wallet->enableTotp();
+        if (!empty($wallet->totp_secret)) {
+            return $this->response->error(Response::ERR_ALREADY_EXISTS);
+        }
+
+        $wallet->generateTotpSecret();
         $wallet->save();
 
         return $this->response->json($wallet->pickProperties(['totp_secret']));
+    }
+
+    public function activateTotpAction()
+    {
+        $account_id = $this->payload->account_id ?? null;
+        $totp_code = $this->payload->totp_code ?? null;
+
+        if (!Account::isValidAccountId($account_id)) {
+            return $this->response->error(Response::ERR_BAD_PARAM, 'account_id');
+        }
+
+        if (empty($totp_code)) {
+            return $this->response->error(Response::ERR_EMPTY_PARAM, 'totp_code');
+        }
+
+        $wallet = Wallets::load($account_id);
+        if (empty($wallet)) {
+            return $this->response->error(Response::ERR_NOT_FOUND);
+        }
+
+        if (!$wallet->is_totp_enabled) {
+            return $this->response->error(Response::ERR_TOTP_DISABLED);
+        }
+
+        $t = new TOTP(null, $wallet->totp_secret);
+        if (!$t->verify((string)$totp_code)) {
+            return $this->response->error(Response::ERR_TFA_TOTP);
+        }
+
+        $wallet->is_totp_enabled = true;
+        $wallet->save();
+
+        return $this->response->json('ok');
+    }
+
+    public function disableTotpAction()
+    {
+        $nonce = $this->payload->nonce ?? null;
+        $signature = $this->payload->signature ?? null;
+
+        if (empty($nonce)) {
+            return $this->response->error(Response::ERR_EMPTY_PARAM, 'nonce');
+        }
+
+        if (empty($signature)) {
+            return $this->response->error(Response::ERR_EMPTY_PARAM, 'signature');
+        }
+
+        $account_id = Auth::accountFromNonce($nonce);
+        if (empty($account_id)) {
+            return $this->response->error(Response::ERR_BAD_PARAM, 'nonce');
+        }
+
+        $public_key = Account::getPublicKeyFromAccountId($account_id);
+
+        if (!ed25519_sign_open($nonce, $public_key, base64_decode($signature))) {
+            return $this->response->error(Response::ERR_BAD_SIGN);
+        }
+
+        $wallet = Wallets::load($account_id);
+        if (empty($wallet)) {
+            return $this->response->error(Response::ERR_NOT_FOUND);
+        }
+
+        $wallet->is_totp_enabled = false;
+        $wallet->totp_secret = null;
+        $wallet->save();
     }
 
     public function sendSmsAction()
@@ -80,7 +152,7 @@ class AuthController extends ControllerBase
         }
 
         if (!Auth::isSmsAllowed($wallet->phone)) {
-            return $this->response->error(Response::ERR_NOT_ALLOWED, 'sms limit');
+            return $this->response->error(Response::ERR_SMS_LIMIT);
         }
 
         $this->sms->Auth([
@@ -94,6 +166,7 @@ class AuthController extends ControllerBase
 
             return $this->response->error(Response::ERR_SERVICE);
         }
+
         $balance = intval($balance->GetCreditBalanceResult);
         if ($balance <= 0) {
             $this->logger->error('Cannot send SMS. Empty balance!');

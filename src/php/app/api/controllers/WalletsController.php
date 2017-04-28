@@ -143,15 +143,15 @@ class WalletsController extends ControllerBase
         }
 
         // Two-factor auth logics
-        if (!empty($wallet->totp_secret)) {
+        if ($wallet->is_totp_enabled) {
             // Google auth enabled
             if (empty($totp_code)) {
-                return $this->response->error(Response::ERR_EMPTY_PARAM, 'totp');
+                return $this->response->error(Response::ERR_EMPTY_PARAM, 'totp_code');
             }
 
             $t = new TOTP(null, $wallet->totp_secret);
-            if (!$t->verify($totp_code)) {
-                return $this->response->error(Response::ERR_TFA_AUTH, 'totp');
+            if (!$t->verify((string)$totp_code)) {
+                return $this->response->error(Response::ERR_TFA_TOTP);
             }
         } elseif (!empty($wallet->phone)) {
             // Phone authentication
@@ -161,7 +161,7 @@ class WalletsController extends ControllerBase
 
             $account_id = Auth::accountFromOtp($sms_code);
             if (empty($account_id) || $account_id != $wallet->account_id) {
-                return $this->response->error(Response::ERR_TFA_AUTH, 'sms_code');
+                return $this->response->error(Response::ERR_TFA_SMS);
             }
 
             // Clear sms limit
@@ -172,6 +172,11 @@ class WalletsController extends ControllerBase
             'keychain_data',
             'email',
             'phone',
+            'is_totp_enabled'
         ]));
+    }
+
+    public function updateAction()
+    {
     }
 }
