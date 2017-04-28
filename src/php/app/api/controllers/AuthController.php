@@ -52,7 +52,7 @@ class AuthController extends ControllerBase
             return $this->response->error(Response::ERR_NOT_FOUND);
         }
 
-        if (!empty($wallet->totp_secret)) {
+        if (!empty($wallet->is_totp_enabled)) {
             return $this->response->error(Response::ERR_ALREADY_EXISTS);
         }
 
@@ -80,7 +80,7 @@ class AuthController extends ControllerBase
             return $this->response->error(Response::ERR_NOT_FOUND);
         }
 
-        if (!$wallet->is_totp_enabled) {
+        if (!$wallet->totp_secret) {
             return $this->response->error(Response::ERR_TOTP_DISABLED);
         }
 
