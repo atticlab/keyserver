@@ -21,6 +21,9 @@ build:
 	docker-compose build
 	docker-compose up -d
 
+indexes:
+	docker exec keyserver-php bash -c '/usr/local/bin/php /src/php/app/cli/cli.php index yokozuna'
+
 attach:
 	docker exec -i -t ${c} /bin/bash
 

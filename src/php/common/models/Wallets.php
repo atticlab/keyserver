@@ -9,7 +9,7 @@ use Smartmoney\Stellar\Strkey\Base32;
 class Wallets extends ModelBase
 {
     const RIAK_BUCKET = 'wallets';
-    const TOTP_SECRET_BYTELENGTH = 128;
+    const TOTP_SECRET_BYTELENGTH = 10;
 
     public $account_id;
 
