@@ -10,7 +10,8 @@ class IndexTask extends Task
     public function yokozunaAction()
     {
         if (!$this->riak->createSchema(Wallets::RIAK_BUCKET, APP_PATH . '/riak_schemes/wallets.xml')) {
-            throw new \Exception('Can not create search schema');
+            echo "Can not create search schema. Check riak host and schema file.";
+            return;
         } else {
             echo "\nSchema created\n";
             echo "Wait 5 sec for solr schema abracadabra...\n";
@@ -24,7 +25,6 @@ class IndexTask extends Task
             echo "Created index" . PHP_EOL;
         }
 
-        echo "Indexes created\n";
         echo "Wait 30 sec for solr indexes abracadabra...\n";
         sleep(30);
 
@@ -34,7 +34,6 @@ class IndexTask extends Task
             echo "Associated index for " . Wallets::RIAK_BUCKET . PHP_EOL;
         }
 
-        echo "Indexes associated\n";
         echo "Finished\n";
     }
 }
