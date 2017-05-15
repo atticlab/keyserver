@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Lib\Helpers;
 use Exception;
 use Phalcon\Di;
 use Smartmoney\Stellar\Strkey\Base32;
@@ -15,6 +16,7 @@ class Wallets extends ModelBase
 
     public $email;
     public $phone;
+    public $face_uuid;
     public $wallet_id;
     public $keychain_data;
     public $salt;
@@ -28,6 +30,7 @@ class Wallets extends ModelBase
     static $stored_props = [
         'email',
         'phone',
+        'face_uuid',
         'wallet_id',
         'keychain_data',
         'salt',
@@ -121,8 +124,20 @@ class Wallets extends ModelBase
             throw new Exception('created_at');
         }
 
-        if (!preg_match('/^(\+)?(38)(\d){10}$/', $this->phone) && !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+        if (empty($this->phone) && empty($this->email) && empty($this->face_uuid)) {
+            throw new Exception('phone|email|face_uuid');
+        }
+
+        if (!empty($this->phone) && !preg_match('/^(\+)?(38)(\d){10}$/', $this->phone)) {
             throw new Exception('Both email and phone empty');
+        }
+
+        if (!empty($this->email) && !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception('email');
+        }
+
+        if (!empty($this->face_uuid) && !Helpers::isUUID($this->face_uuid)) {
+            throw new Exception('face_uuid');
         }
 
         if ($this->is_totp_enabled && empty($this->totp_secret)) {

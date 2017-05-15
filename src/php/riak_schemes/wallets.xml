@@ -19,9 +19,9 @@
   </types>
 
   <fields>
-    <!-- for tx -->
     <field name="email" type="string" indexed="true" stored="true"/>
     <field name="phone" type="long" indexed="true" stored="true"/>
+    <field name="face_uuid" type="string" indexed="true" stored="true"/>
     <field name="wallet_id" type="string" indexed="true" stored="true"/>
     <field name="keychain_data" type="string" indexed="true" stored="true"/>
     <field name="salt" type="string" indexed="true" stored="true"/>

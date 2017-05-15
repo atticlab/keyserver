@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Lib\Auth;
+use App\Lib\Helpers;
 use App\Lib\Response;
 use App\Models\Wallets;
 use OTPHP\TOTP;
@@ -12,9 +13,6 @@ class WalletsController extends ControllerBase
     public function createAction()
     {
         $account_id = $this->payload->account_id ?? null;
-        $email = $this->payload->email ?? null;
-        $phone = $this->payload->phone ?? null;
-
         if (!Account::isValidAccountId($account_id)) {
             return $this->response->error(Response::ERR_BAD_PARAM, 'account_id');
         }
@@ -24,102 +22,52 @@ class WalletsController extends ControllerBase
             return $this->response->error(Response::ERR_ALREADY_EXISTS);
         }
 
-        if (empty($phone) && empty($email)) {
-            return $this->response->error(Response::ERR_EMPTY_PARAM, 'email|phone');
-        }
-
-        if (!empty($email)) {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                return $this->response->error(Response::ERR_BAD_PARAM, 'email');
-            }
-
-            $wallet = Wallets::findFirstByField('email', $email);
+        return $this->validateParams(function ($email, $phone, $face_uuid, $wallet) use ($account_id) {
             if (!empty($wallet)) {
-                return $this->response->error(Response::ERR_ALREADY_EXISTS, 'email');
+                return $this->response->error(Response::ERR_ALREADY_EXISTS);
             }
-        }
 
-        if (!empty($phone)) {
-            $wallet = Wallets::findFirstByField('phone', intval($phone));
-            if (!empty($wallet)) {
-                return $this->response->error(Response::ERR_ALREADY_EXISTS, 'phone');
+            $wallet = new Wallets($account_id);
+            $wallet->email = $email;
+            $wallet->phone = $phone;
+            $wallet->face_uuid = $face_uuid;
+            $wallet->wallet_id = $this->payload->wallet_id ?? null;
+            $wallet->keychain_data = $this->payload->keychain_data ?? null;
+            $wallet->salt = $this->payload->salt ?? null;
+            $wallet->kdf_params = $this->payload->kdf_params ?? null;
+            $wallet->is_locked = false;
+            $wallet->created_at = time();
+
+            try {
+                $wallet->save();
+            } catch (Exception $e) {
+                return $this->response->error(Response::ERR_BAD_PARAM, $e->getMessage());
             }
-        }
 
-        $wallet = new Wallets($account_id);
-        $wallet->email = $email;
-        $wallet->phone = $phone;
-        $wallet->wallet_id = $this->payload->wallet_id ?? null;
-        $wallet->keychain_data = $this->payload->keychain_data ?? null;
-        $wallet->salt = $this->payload->salt ?? null;
-        $wallet->kdf_params = $this->payload->kdf_params ?? null;
-        $wallet->is_locked = false;
-        $wallet->created_at = time();
-
-        try {
-            $wallet->save();
-        } catch (Exception $e) {
-            return $this->response->error(Response::ERR_BAD_PARAM, $e->getMessage());
-        }
-
-        $this->response->json('ok');
+            $this->response->json('ok');
+        });
     }
 
     public function getDataAction()
     {
-        $email = $this->payload->email ?? null;
-        $phone = $this->payload->phone ?? null;
-
-        if (empty($phone) && empty($email)) {
-            return $this->response->error(Response::ERR_EMPTY_PARAM, 'email|phone');
-        }
-
-        if (!empty($email)) {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                return $this->response->error(Response::ERR_BAD_PARAM, 'email');
+        return $this->validateParams(function ($email, $phone, $face_uuid, $wallet) {
+            if (empty($wallet)) {
+                return $this->response->error(Response::ERR_NOT_FOUND);
             }
 
-            $wallet = Wallets::findFirstByField('email', $email);
-
-        } elseif (!empty($phone)) {
-            $wallet = Wallets::findFirstByField('phone', intval($phone));
-        }
-
-        if (empty($wallet)) {
-            return $this->response->error(Response::ERR_NOT_FOUND);
-        }
-
-        return $this->response->json($wallet->pickProperties(['account_id', 'salt', 'kdf_params']));
+            return $this->response->json($wallet->pickProperties(['account_id', 'salt', 'kdf_params']));
+        });
     }
 
     public function notExistAction()
     {
-        $email = $this->payload->email ?? null;
-        $phone = $this->payload->phone ?? null;
-
-        if (empty($phone) && empty($email)) {
-            return $this->response->error(Response::ERR_EMPTY_PARAM, 'email|phone');
-        }
-
-        if (!empty($email)) {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                return $this->response->error(Response::ERR_BAD_PARAM, 'email');
-            }
-
-            $wallet = Wallets::findFirstByField('email', $email);
+        return $this->validateParams(function ($email, $phone, $face_uuid, $wallet) {
             if (!empty($wallet)) {
                 return $this->response->error(Response::ERR_ALREADY_EXISTS);
             }
-        }
 
-        if (!empty($phone)) {
-            $wallet = Wallets::findFirstByField('phone', intval($phone));
-            if (!empty($wallet)) {
-                return $this->response->error(Response::ERR_ALREADY_EXISTS);
-            }
-        }
-
-        return $this->response->json('ok');
+            return $this->response->json('ok');
+        });
     }
 
     public function getAction()
@@ -172,11 +120,43 @@ class WalletsController extends ControllerBase
             'keychain_data',
             'email',
             'phone',
+            'face_id',
             'is_totp_enabled'
         ]));
     }
 
-    public function updateAction()
+    private function validateParams($cb)
     {
+        $email = $this->payload->email ?? null;
+        $phone = $this->payload->phone ?? null;
+        $face_uuid = $this->payload->face_uuid ?? null;
+
+        if (empty($phone) && empty($email) && empty($face_uuid)) {
+            return $this->response->error(Response::ERR_EMPTY_PARAM, 'email|phone|face_uuid');
+        }
+
+        if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->response->error(Response::ERR_BAD_PARAM, 'email');
+        }
+
+        if (!empty($face_uuid) && !Helpers::isUUID($face_uuid)) {
+            return $this->response->error(Response::ERR_BAD_PARAM, 'face_uuid');
+        }
+
+        $wallet = null;
+
+        if (!empty($email)) {
+            $wallet = Wallets::findFirstByField('email', $email);
+        }
+
+        if (empty($wallet) && !empty($phone)) {
+            $wallet = Wallets::findFirstByField('phone', intval($phone));
+        }
+
+        if (empty($wallet) && !empty($face_uuid)) {
+            $wallet = Wallets::findFirstByField('face_uuid', $face_uuid);
+        }
+
+        return $cb($email, $phone, $face_uuid, $wallet);
     }
 }
