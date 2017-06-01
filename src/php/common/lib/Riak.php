@@ -33,8 +33,7 @@ class Riak
 
         $curl = $this->initCurl('/search/query/' . $query->bucket . '?' . $params);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $resp = curl_exec($curl);
-        curl_close($curl);
+        $resp = $this->makeRequest($curl);
 
         if (!empty($resp)) {
             return json_decode($resp, 1)['response'];
@@ -53,10 +52,8 @@ class Riak
     public function set($bucket, $key, $data)
     {
         $curl = $this->initCurl('/buckets/' . $bucket . '/keys/' . $key, $data);
-        $success = curl_exec($curl);
-        curl_close($curl);
 
-        return $success;
+        return $this->makeRequest($curl);
     }
 
     /**
@@ -69,8 +66,7 @@ class Riak
     {
         $curl = $this->initCurl('/buckets/' . $bucket . '/keys/' . $key);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $resp = curl_exec($curl);
-        curl_close($curl);
+        $resp = $this->makeRequest($curl);
 
         return json_decode($resp, 1);
     }
@@ -86,10 +82,7 @@ class Riak
         $curl = $this->initCurl('/buckets/' . $bucket . '/keys/' . $key);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
-        $success = curl_exec($curl);
-        curl_close($curl);
-
-        return $success;
+        return $this->makeRequest($curl);
     }
 
     public function uploadBinary($bucket, $filepath, $key = null, $content_type = null)
@@ -118,10 +111,7 @@ class Riak
 
         curl_setopt($curl, CURLOPT_POSTFIELDS, file_get_contents($filepath));
 
-        $success = curl_exec($curl);
-        curl_close($curl);
-
-        return $success;
+        return $this->makeRequest($curl);
     }
 
     /**
@@ -142,8 +132,7 @@ class Riak
         $curl = $this->initCurl('/buckets/' . $bucket . '/keys/' . $key);
         curl_setopt($curl, CURLOPT_FILE, $fp);
 
-        $success = curl_exec($curl);
-        curl_close($curl);
+        $success = $this->makeRequest($curl);
         fclose($fp);
 
         return $success;
@@ -170,10 +159,7 @@ class Riak
         curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-type: application/xml']);
         curl_setopt($curl, CURLOPT_POSTFIELDS, file_get_contents($filepath));
 
-        $success = curl_exec($curl);
-        curl_close($curl);
-
-        return $success;
+        return $this->makeRequest($curl);
     }
 
     public function createIndex($index_name, $schema = '_yz_default')
@@ -182,10 +168,7 @@ class Riak
             'schema' => $schema
         ]);
 
-        $success = curl_exec($curl);
-        curl_close($curl);
-
-        return $success;
+        return $this->makeRequest($curl);
     }
 
     public function associateIndex($bucket, $index_name)
@@ -196,10 +179,7 @@ class Riak
             ]
         ]);
 
-        $success = curl_exec($curl);
-        curl_close($curl);
-
-        return $success;
+        return $this->makeRequest($curl);
     }
 
     private function initCurl($route, $data = null)
@@ -225,5 +205,19 @@ class Riak
         }
 
         return $curl;
+    }
+
+    private function makeRequest(&$curl)
+    {
+        $response = curl_exec($curl);
+        $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $error = curl_error($curl);
+
+        // Workaround for '404 not found' which riak returns for all non-existing objects
+        if ($error && $http_code != 404) {
+            throw new \Exception($error);
+        }
+
+        return $response;
     }
 }

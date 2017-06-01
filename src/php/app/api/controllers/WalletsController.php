@@ -17,7 +17,14 @@ class WalletsController extends ControllerBase
             return $this->response->error(Response::ERR_BAD_PARAM, 'account_id');
         }
 
-        $wallet = Wallets::load($account_id);
+        try {
+            $wallet = Wallets::load($account_id);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            return $this->response->error(Response::ERR_SERVICE);
+        }
+
         if (!empty($wallet)) {
             return $this->response->error(Response::ERR_ALREADY_EXISTS);
         }
@@ -40,11 +47,15 @@ class WalletsController extends ControllerBase
 
             try {
                 $wallet->save();
-            } catch (Exception $e) {
+            } catch (\InvalidArgumentException $e) {
                 return $this->response->error(Response::ERR_BAD_PARAM, $e->getMessage());
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage());
+
+                return $this->response->error(Response::ERR_SERVICE);
             }
 
-            $this->response->json('ok');
+            return $this->response->json('ok');
         });
     }
 
@@ -59,14 +70,10 @@ class WalletsController extends ControllerBase
         });
     }
 
-    public function notExistAction()
+    public function existsAction()
     {
         return $this->validateParams(function ($email, $phone, $face_uuid, $wallet) {
-            if (!empty($wallet)) {
-                return $this->response->error(Response::ERR_ALREADY_EXISTS);
-            }
-
-            return $this->response->json('ok');
+            return $this->response->json(!empty($wallet));
         });
     }
 
@@ -85,7 +92,14 @@ class WalletsController extends ControllerBase
             return $this->response->error(Response::ERR_EMPTY_PARAM, 'wallet_id');
         }
 
-        $wallet = Wallets::load($account_id);
+        try {
+            $wallet = Wallets::load($account_id);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            return $this->response->error(Response::ERR_SERVICE);
+        }
+
         if (empty($wallet) || $wallet->wallet_id != $wallet_id) {
             return $this->response->error(Response::ERR_NOT_FOUND);
         }
@@ -145,16 +159,22 @@ class WalletsController extends ControllerBase
 
         $wallet = null;
 
-        if (!empty($email)) {
-            $wallet = Wallets::findFirstByField('email', $email);
-        }
+        try {
+            if (!empty($email)) {
+                $wallet = Wallets::findFirstByField('email', $email);
+            }
 
-        if (empty($wallet) && !empty($phone)) {
-            $wallet = Wallets::findFirstByField('phone', intval($phone));
-        }
+            if (empty($wallet) && !empty($phone)) {
+                $wallet = Wallets::findFirstByField('phone', intval($phone));
+            }
 
-        if (empty($wallet) && !empty($face_uuid)) {
-            $wallet = Wallets::findFirstByField('face_uuid', $face_uuid);
+            if (empty($wallet) && !empty($face_uuid)) {
+                $wallet = Wallets::findFirstByField('face_uuid', $face_uuid);
+            }
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            return $this->response->error(Response::ERR_SERVICE);
         }
 
         return $cb($email, $phone, $face_uuid, $wallet);

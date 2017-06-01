@@ -47,7 +47,14 @@ class AuthController extends ControllerBase
             return $this->response->error(Response::ERR_BAD_SIGN);
         }
 
-        $wallet = Wallets::load($account_id);
+        try {
+            $wallet = Wallets::load($account_id);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            return $this->response->error(Response::ERR_SERVICE);
+        }
+
         if (empty($wallet)) {
             return $this->response->error(Response::ERR_NOT_FOUND);
         }
@@ -75,7 +82,14 @@ class AuthController extends ControllerBase
             return $this->response->error(Response::ERR_EMPTY_PARAM, 'totp_code');
         }
 
-        $wallet = Wallets::load($account_id);
+        try {
+            $wallet = Wallets::load($account_id);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            return $this->response->error(Response::ERR_SERVICE);
+        }
+
         if (empty($wallet)) {
             return $this->response->error(Response::ERR_NOT_FOUND);
         }
@@ -119,7 +133,14 @@ class AuthController extends ControllerBase
             return $this->response->error(Response::ERR_BAD_SIGN);
         }
 
-        $wallet = Wallets::load($account_id);
+        try {
+            $wallet = Wallets::load($account_id);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            return $this->response->error(Response::ERR_SERVICE);
+        }
+        
         if (empty($wallet)) {
             return $this->response->error(Response::ERR_NOT_FOUND);
         }
@@ -142,7 +163,14 @@ class AuthController extends ControllerBase
             return $this->response->error(Response::ERR_EMPTY_PARAM, 'wallet_id');
         }
 
-        $wallet = Wallets::load($account_id);
+        try {
+            $wallet = Wallets::load($account_id);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            return $this->response->error(Response::ERR_SERVICE);
+        }
+
         if (empty($wallet) || $wallet->wallet_id != $wallet_id) {
             return $this->response->error(Response::ERR_NOT_FOUND);
         }

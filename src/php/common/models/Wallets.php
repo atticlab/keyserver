@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Lib\Helpers;
-use Exception;
+use InvalidArgumentException;
 use Phalcon\Di;
 use Smartmoney\Stellar\Strkey\Base32;
 
@@ -97,51 +97,51 @@ class Wallets extends ModelBase
     public function validate()
     {
         if (empty($this->account_id)) {
-            throw new Exception('account_id');
+            throw new InvalidArgumentException('account_id');
         }
 
         if (empty($this->wallet_id)) {
-            throw new Exception('wallet_id');
+            throw new InvalidArgumentException('wallet_id');
         }
 
         if (empty($this->keychain_data)) {
-            throw new Exception('keychain_data');
+            throw new InvalidArgumentException('keychain_data');
         }
 
         if (empty($this->salt)) {
-            throw new Exception('salt');
+            throw new InvalidArgumentException('salt');
         }
 
         if (empty($this->kdf_params)) {
-            throw new Exception('kdf_params');
+            throw new InvalidArgumentException('kdf_params');
         }
 
         if (is_null($this->is_locked)) {
-            throw new Exception('is_locked');
+            throw new InvalidArgumentException('is_locked');
         }
 
         if (empty($this->created_at)) {
-            throw new Exception('created_at');
+            throw new InvalidArgumentException('created_at');
         }
 
         if (empty($this->phone) && empty($this->email) && empty($this->face_uuid)) {
-            throw new Exception('phone|email|face_uuid');
+            throw new InvalidArgumentException('phone|email|face_uuid');
         }
 
         if (!empty($this->phone) && !preg_match('/^(\+)?(38)(\d){10}$/', $this->phone)) {
-            throw new Exception('Both email and phone empty');
+            throw new InvalidArgumentException('Both email and phone empty');
         }
 
         if (!empty($this->email) && !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-            throw new Exception('email');
+            throw new InvalidArgumentException('email');
         }
 
         if (!empty($this->face_uuid) && !Helpers::isUUID($this->face_uuid)) {
-            throw new Exception('face_uuid');
+            throw new InvalidArgumentException('face_uuid');
         }
 
         if ($this->is_totp_enabled && empty($this->totp_secret)) {
-            throw new Exception('totp is enabled, but secret is empty');
+            throw new InvalidArgumentException('totp is enabled, but secret is empty');
         }
 
         $this->email = strtolower($this->email);
