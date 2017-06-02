@@ -73,7 +73,9 @@ class WalletsController extends ControllerBase
     public function existsAction()
     {
         return $this->validateParams(function ($email, $phone, $face_uuid, $wallet) {
-            return $this->response->json(!empty($wallet));
+            return $this->response->json([
+                'account_id' => $wallet->account_id ?? null
+            ]);
         });
     }
 
