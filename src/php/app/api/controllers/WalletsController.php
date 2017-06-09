@@ -141,6 +141,66 @@ class WalletsController extends ControllerBase
         ]));
     }
 
+    public function updateAction()
+    {
+        return $this->checkSignature(function ($account_id) {
+            try {
+                $wallet = Wallets::load($account_id);
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage());
+
+                return $this->response->error(Response::ERR_SERVICE);
+            }
+
+            if (empty($wallet)) {
+                return $this->response->error(Response::ERR_NOT_FOUND);
+            }
+
+            $update = false;
+
+            // Check password update
+            $keychain_data = $this->payload->keychain_data ?? null;
+            if (!empty($keychain_data)) {
+                $wallet_id = $this->payload->wallet_id ?? null;
+                $salt = $this->payload->salt ?? null;
+                $kdf_params = $this->payload->kdf_params ?? null;
+
+                if (empty($wallet_id)) {
+                    return $this->response->error(Response::ERR_EMPTY_PARAM, 'wallet_id');
+                }
+
+                if (empty($salt)) {
+                    return $this->response->error(Response::ERR_EMPTY_PARAM, 'salt');
+                }
+
+                if (empty($kdf_params)) {
+                    return $this->response->error(Response::ERR_EMPTY_PARAM, 'kdf_params');
+                }
+
+                $wallet->keychain_data = $keychain_data;
+                $wallet->wallet_id = $wallet_id;
+                $wallet->salt = $salt;
+                $wallet->kdf_params = $kdf_params;
+
+                $update = true;
+            }
+
+            if ($update) {
+                try {
+                    $wallet->save();
+                } catch (\InvalidArgumentException $e) {
+                    return $this->response->error(Response::ERR_BAD_PARAM, $e->getMessage());
+                } catch (\Exception $e) {
+                    $this->logger->error($e->getMessage());
+
+                    return $this->response->error(Response::ERR_SERVICE);
+                }
+            }
+
+            return $this->response->json('ok');
+        });
+    }
+
     private function validateParams($cb)
     {
         $email = $this->payload->email ?? null;

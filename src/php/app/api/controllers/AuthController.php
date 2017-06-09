@@ -25,48 +25,29 @@ class AuthController extends ControllerBase
 
     public function enableTotpAction()
     {
-        $nonce = $this->payload->nonce ?? null;
-        $signature = $this->payload->signature ?? null;
+        return $this->checkSignature(function ($account_id) {
+            try {
+                $wallet = Wallets::load($account_id);
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage());
 
-        if (empty($nonce)) {
-            return $this->response->error(Response::ERR_EMPTY_PARAM, 'nonce');
-        }
+                return $this->response->error(Response::ERR_SERVICE);
+            }
 
-        if (empty($signature)) {
-            return $this->response->error(Response::ERR_EMPTY_PARAM, 'signature');
-        }
+            if (empty($wallet)) {
+                return $this->response->error(Response::ERR_NOT_FOUND);
+            }
 
-        $account_id = Auth::accountFromNonce($nonce);
-        if (empty($account_id)) {
-            return $this->response->error(Response::ERR_BAD_PARAM, 'nonce');
-        }
+            if (!empty($wallet->is_totp_enabled)) {
+                return $this->response->error(Response::ERR_ALREADY_EXISTS);
+            }
 
-        $public_key = Account::getPublicKeyFromAccountId($account_id);
+            $wallet->generateTotpSecret();
+            $wallet->save();
 
-        if (!ed25519_sign_open($nonce, $public_key, base64_decode($signature))) {
-            return $this->response->error(Response::ERR_BAD_SIGN);
-        }
+            return $this->response->json($wallet->pickProperties(['totp_secret']));
+        });
 
-        try {
-            $wallet = Wallets::load($account_id);
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-
-            return $this->response->error(Response::ERR_SERVICE);
-        }
-
-        if (empty($wallet)) {
-            return $this->response->error(Response::ERR_NOT_FOUND);
-        }
-
-        if (!empty($wallet->is_totp_enabled)) {
-            return $this->response->error(Response::ERR_ALREADY_EXISTS);
-        }
-
-        $wallet->generateTotpSecret();
-        $wallet->save();
-
-        return $this->response->json($wallet->pickProperties(['totp_secret']));
     }
 
     public function activateTotpAction()
@@ -111,43 +92,25 @@ class AuthController extends ControllerBase
 
     public function disableTotpAction()
     {
-        $nonce = $this->payload->nonce ?? null;
-        $signature = $this->payload->signature ?? null;
+        return $this->checkSignature(function ($account_id) {
+            try {
+                $wallet = Wallets::load($account_id);
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage());
 
-        if (empty($nonce)) {
-            return $this->response->error(Response::ERR_EMPTY_PARAM, 'nonce');
-        }
+                return $this->response->error(Response::ERR_SERVICE);
+            }
 
-        if (empty($signature)) {
-            return $this->response->error(Response::ERR_EMPTY_PARAM, 'signature');
-        }
+            if (empty($wallet)) {
+                return $this->response->error(Response::ERR_NOT_FOUND);
+            }
 
-        $account_id = Auth::accountFromNonce($nonce);
-        if (empty($account_id)) {
-            return $this->response->error(Response::ERR_BAD_PARAM, 'nonce');
-        }
+            $wallet->is_totp_enabled = false;
+            $wallet->totp_secret = null;
+            $wallet->save();
 
-        $public_key = Account::getPublicKeyFromAccountId($account_id);
-
-        if (!ed25519_sign_open($nonce, $public_key, base64_decode($signature))) {
-            return $this->response->error(Response::ERR_BAD_SIGN);
-        }
-
-        try {
-            $wallet = Wallets::load($account_id);
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-
-            return $this->response->error(Response::ERR_SERVICE);
-        }
-        
-        if (empty($wallet)) {
-            return $this->response->error(Response::ERR_NOT_FOUND);
-        }
-
-        $wallet->is_totp_enabled = false;
-        $wallet->totp_secret = null;
-        $wallet->save();
+            return $this->response->json('ok');
+        });
     }
 
     public function sendSmsAction()
