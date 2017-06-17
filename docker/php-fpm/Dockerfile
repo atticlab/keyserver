@@ -1,5 +1,8 @@
 FROM php:5.6-fpm
 
+ENV http_proxy http://10.78.17.6:3128
+ENV https_proxy http://10.78.17.6:3128
+
 # install phpredis extension
 ENV PHPREDIS_VERSION 2.2.7
 
