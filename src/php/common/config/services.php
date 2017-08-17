@@ -2,6 +2,7 @@
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Processor\IntrospectionProcessor;
+use App\Lib\RiakMonologHandler;
 
 # Logger
 $di->setShared('logger', function () use ($config, $di) {
@@ -9,9 +10,13 @@ $di->setShared('logger', function () use ($config, $di) {
     $stream = new StreamHandler(ini_get('error_log'), Logger::DEBUG);
     $stream->setFormatter($format);
 
+    $riak_handler = new RiakMonologHandler('logs', Logger::DEBUG); // use Logger::WARNING for production
+    $riak_handler->setFormatter($format);
+
     $log = new Logger(__FUNCTION__);
     $log->pushProcessor(new IntrospectionProcessor());
     $log->pushHandler($stream);
+    $log->pushHandler($riak_handler);
 
     return $log;
 });
@@ -69,6 +74,16 @@ $di->setShared('mailer', function () use ($config) {
 $di->setShared('riak', function () use ($config) {
     $conn = new \App\Lib\Riak(
         $config->riak->host
+    );
+
+    return $conn;
+});
+
+$di->setShared('riak_cli', function () use ($config) {
+    $conn = new \Atticlab\RiakLite\Riak(
+        getenv('RIAK_HOST'),
+        getenv('SSL_PATH'),
+        getenv('SSL_PASS')
     );
 
     return $conn;

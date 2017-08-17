@@ -4,6 +4,7 @@
     "phpmailer/phpmailer": "^5.2",
     "atticlab/stellar-php-sdk": "dev-master",
     "attics/soap": "dev-master",
+    "atticlab/riak-lite-php": "dev-master",
     "spomky-labs/otphp": "^8.3"
   },
   "scripts": {
@@ -19,6 +20,13 @@
     {
       "type": "git",
       "url": "https://bitbucket.org/attics/soap"
+    },
+    {
+      "type": "git",
+      "url": "http://bitbucket.attic.pw/scm/lib/riak-lite-php.git"
     }
-  ]
+  ],
+  "config": {
+    "secure-http": false
+  }
 }
