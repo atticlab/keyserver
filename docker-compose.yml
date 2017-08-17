@@ -6,7 +6,7 @@ services:
     container_name: keyserver-nginx
     build: docker/nginx
     ports:
-      - "8085:80"
+      - "8085:8085"
     volumes:
       - ./src:/src
       - ./logs/nginx/:/logs
