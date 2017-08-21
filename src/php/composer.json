@@ -10,6 +10,9 @@
   "scripts": {
     "post-install-cmd": [
       "/usr/local/bin/php /src/php/app/cli/cli.php index yokozuna"
+    ],
+    "post-update-cmd": [
+      "/usr/local/bin/php /src/php/app/cli/cli.php index yokozuna"
     ]
   },
   "repositories": [

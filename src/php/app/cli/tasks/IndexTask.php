@@ -9,12 +9,14 @@ class IndexTask extends Task
 {
     public function yokozunaAction()
     {
-        if (!$this->riak_cli->createSchema(Wallets::RIAK_BUCKET, APP_PATH . '/riak_schemes/wallets.xml')) {
-            throw new \Exception('Can not create search schema');
-        } else {
-            echo "\nSchema created\n";
-            echo "Wait 5 sec for solr schema abracadabra...\n";
-            sleep(5);
+        if (!$this->riak->fetchSchema(Wallets::RIAK_BUCKET, APP_PATH . '/riak_schemes/wallets.xml')) {
+            if (!$this->riak_cli->createSchema(Wallets::RIAK_BUCKET, APP_PATH . '/riak_schemes/wallets.xml')) {
+                throw new \Exception('Can not create search schema');
+            } else {
+                echo "\nSchema created\n";
+                echo "Wait 5 sec for solr schema abracadabra...\n";
+                sleep(5);
+            }
         }
 
         $ignore_files = [
