@@ -27,6 +27,9 @@ class Logs
     /** @var  Log record timestamp */
     public $Timestamp;
 
+    /** @var  Log record processed flag */
+    public $IsProcessed;
+
     /** @var array Fields which will be saved to DB */
     static $fields_to_save = [
         'Level',
@@ -34,6 +37,7 @@ class Logs
         'Fields',
         'Message',
         'Timestamp',
+        'IsProcessed',
         '_type',
     ];
 
@@ -87,6 +91,10 @@ class Logs
 
         if (empty($this->Message)) {
             throw new Exception('Bad param: Message');
+        }
+
+        if (empty($this->IsProcessed)) {
+            throw new Exception('Bad param: IsProcessed');
         }
 
         if (empty($this->Timestamp)) {

@@ -44,6 +44,7 @@ class RiakMonologHandler extends AbstractProcessingHandler
         $log->Message = $record['formatted'];
         $log->Fields = $record;
         $log->Service = 'KeyServer';
+        $log->IsProcessed = false;
         $log->_type = 'Log';
         $log->Timestamp = round(microtime(true) * 1000);
 
