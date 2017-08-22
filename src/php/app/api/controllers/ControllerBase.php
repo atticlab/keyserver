@@ -12,8 +12,6 @@ class ControllerBase extends \Phalcon\Mvc\Controller
 
     public function beforeExecuteRoute()
     {
-        $this->checkMaintenance();
-
         $this->payload = json_decode(file_get_contents('php://input'));
 
         if (!empty($_SERVER['HTTP_ORIGIN'])) {
@@ -31,6 +29,8 @@ class ControllerBase extends \Phalcon\Mvc\Controller
                 }
             //}
         }
+
+        $this->checkMaintenance();
     }
 
     public function buildUrl($path = null)
