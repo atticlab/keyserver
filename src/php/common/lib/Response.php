@@ -17,6 +17,9 @@ class Response extends \Phalcon\Http\Response
     const ERR_TFA_TOTP = 'ERR_TFA_TOTP';
     const ERR_TFA_SMS = 'ERR_TFA_SMS';
 
+    //maintenance
+    const ERR_MAINTENANCE = 'ERR_MAINTENANCE';
+
     public function error($err_code, $msg = '')
     {
         if (!defined('self::' . $err_code)) {
