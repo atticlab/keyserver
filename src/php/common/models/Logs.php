@@ -93,7 +93,7 @@ class Logs
             throw new Exception('Bad param: Message');
         }
 
-        if (empty($this->IsProcessed)) {
+        if (!isset($this->IsProcessed)) {
             throw new Exception('Bad param: IsProcessed');
         }
 
