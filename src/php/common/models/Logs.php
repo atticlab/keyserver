@@ -30,6 +30,9 @@ class Logs
     /** @var  Log record processed flag */
     public $IsProcessed;
 
+    /** @var  Log record node ip */
+    public $Node;
+
     /** @var array Fields which will be saved to DB */
     static $fields_to_save = [
         'Level',
@@ -38,6 +41,7 @@ class Logs
         'Message',
         'Timestamp',
         'IsProcessed',
+        'Node',
         '_type',
     ];
 
@@ -95,6 +99,10 @@ class Logs
 
         if (!isset($this->IsProcessed)) {
             throw new Exception('Bad param: IsProcessed');
+        }
+
+        if (empty($this->Node)) {
+            throw new Exception('Bad param: Node');
         }
 
         if (empty($this->Timestamp)) {

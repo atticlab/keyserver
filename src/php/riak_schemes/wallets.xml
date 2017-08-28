@@ -34,6 +34,7 @@
     <field name="Level" type="string" indexed="true" stored="true"/>
     <field name="Timestamp" type="long" indexed="true" stored="true"/>
     <field name="IsProcessed" type="boolean" indexed="true" stored="true"/>
+    <field name="Node" type="string" indexed="true" stored="true"/>
 
     <!-- All of these fields are required by Riak Search -->
     <field name="_yz_id" type="_yz_str" indexed="true" stored="true" multiValued="false" required="true"/>

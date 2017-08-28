@@ -19,6 +19,7 @@ state:
 
 build:
 	@if [ ! -f ./.env ]; then\
+		read -p "Enter current node ip:" host; echo "HOST=$$host" >> ./.env; \
 		read -p "Enter Riak host (with protocol and port):" riak_host; echo "RIAK_HOST=$$riak_host" >> ./.env; \
 		read -p "Enter number of riak nodes:" n_val; echo "N_VAL=$$n_val" >> ./.env; \
 	fi
