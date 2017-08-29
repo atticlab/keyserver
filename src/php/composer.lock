@@ -4,15 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b70c82654167e33eb1d83646018cd67",
+    "content-hash": "a5ef5253fdd7b2fd6d4a748f477d1300",
     "packages": [
         {
             "name": "atticlab/riak-lite-php",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "http://bitbucket.attic.pw/scm/lib/riak-lite-php.git",
-                "reference": "03f641c598120ba102859083aea3fa2062aaf575"
+                "url": "https://github.com/humaniq/riak-lite-php.git",
+                "reference": "b6bbbaddca2980f6e76fe95d95874afba3a737f1"
             },
             "require": {
                 "php": ">=5.4"
@@ -33,15 +33,15 @@
                 }
             ],
             "description": "PHP library to operate with Riak DB",
-            "time": "2017-08-21 14:40:46"
+            "time": "2017-08-29 15:40:56"
         },
         {
             "name": "atticlab/stellar-php-sdk",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://bitbucket.org/atticlab/stellar-php",
-                "reference": "593390f92a60d8d967319ef072eea3181d4c02be"
+                "url": "https://github.com/humaniq/stellar-php.git",
+                "reference": "331e25ef718f6252a400c3d64a9e0852a7256d75"
             },
             "require": {
                 "ext-curl": "*",
@@ -53,15 +53,15 @@
                     "Smartmoney\\Stellar\\": "src"
                 }
             },
-            "time": "2017-04-26 16:19:12"
+            "time": "2017-08-29 16:43:37"
         },
         {
             "name": "attics/soap",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://bitbucket.org/attics/soap",
-                "reference": "6fc1ebcd40345276d82508ca5ee7b1de8d3b82ca"
+                "url": "https://github.com/humaniq/soap.git",
+                "reference": "75175835039ae55493cc332615a18d69b1c78685"
             },
             "require": {
                 "zendframework/zend-soap": "2.5.*"
@@ -76,7 +76,7 @@
                 "proprietary"
             ],
             "description": "Soap library supporting authenticated WSDL",
-            "time": "2016-10-22 09:47:45"
+            "time": "2017-08-29 16:46:06"
         },
         {
             "name": "beberlei/assert",
@@ -353,16 +353,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.24",
+            "version": "v5.2.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "22d04c6a58145a244696f3f254c1875aa653b26a"
+                "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/22d04c6a58145a244696f3f254c1875aa653b26a",
-                "reference": "22d04c6a58145a244696f3f254c1875aa653b26a",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/2baf20b01690fba8cf720c1ebcf9b988eda50915",
+                "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915",
                 "shasum": ""
             },
             "require": {
@@ -426,7 +426,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2017-07-26T21:00:20+00:00"
+            "time": "2017-08-28T11:12:07+00:00"
         },
         {
             "name": "psr/container",
@@ -1098,16 +1098,16 @@
         },
         {
             "name": "zendframework/zend-validator",
-            "version": "2.10.0",
+            "version": "2.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-validator.git",
-                "reference": "07ef29e31353592e99eb32b2feb7248681ffb630"
+                "reference": "010084ddbd33299bf51ea6f0e07f8f4e8bd832a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/07ef29e31353592e99eb32b2feb7248681ffb630",
-                "reference": "07ef29e31353592e99eb32b2feb7248681ffb630",
+                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/010084ddbd33299bf51ea6f0e07f8f4e8bd832a8",
+                "reference": "010084ddbd33299bf51ea6f0e07f8f4e8bd832a8",
                 "shasum": ""
             },
             "require": {
@@ -1165,7 +1165,7 @@
                 "validator",
                 "zf2"
             ],
-            "time": "2017-08-14T20:36:46+00:00"
+            "time": "2017-08-22T14:19:23+00:00"
         }
     ],
     "packages-dev": [],

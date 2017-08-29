@@ -18,18 +18,15 @@
   "repositories": [
     {
       "type": "git",
-      "url": "https://bitbucket.org/atticlab/stellar-php"
+      "url": "https://github.com/humaniq/stellar-php.git"
     },
     {
       "type": "git",
-      "url": "https://bitbucket.org/attics/soap"
+      "url": "https://github.com/humaniq/soap.git"
     },
     {
       "type": "git",
       "url": "https://github.com/humaniq/riak-lite-php.git"
     }
-  ],
-  "config": {
-    "secure-http": false
-  }
+  ]
 }
