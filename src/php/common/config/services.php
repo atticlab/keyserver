@@ -7,10 +7,10 @@ use App\Lib\RiakMonologHandler;
 # Logger
 $di->setShared('logger', function () use ($config, $di) {
     $format = new Monolog\Formatter\LineFormatter("[%datetime%] %level_name%: %message% %context% [%extra.class%: %extra.line%]\n");
-    $stream = new StreamHandler(ini_get('error_log'), Logger::DEBUG);
+    $stream = new StreamHandler(ini_get('error_log'), Logger::INFO);
     $stream->setFormatter($format);
 
-    $riak_handler = new RiakMonologHandler('logs', Logger::DEBUG); // use Logger::WARNING for production
+    $riak_handler = new RiakMonologHandler('logs', Logger::INFO); // use Logger::INFO for production
     $riak_handler->setFormatter($format);
 
     $log = new Logger(__FUNCTION__);
